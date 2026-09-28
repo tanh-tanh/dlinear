@@ -48,15 +48,26 @@ def train_one_epoch(model, loader, criterion, optimizer):
     return train_loss
 
 
-def train_sgd(model, train_loader, val_loader, ckpt_path, lr=5e-3, epochs=10, patience=3):
-    """Adam, lr giảm một nửa sau mỗi epoch, dừng sớm theo MSE validation, nạp lại trọng số tốt nhất.
+def lr_factor(epoch_idx, lradj="type1"):
+    """Hệ số lr cho epoch thứ epoch_idx + 1 (epoch_idx đếm từ 0).
 
-    Lưu ý: LTSF-Linear (lradj='type1') giữ lr gốc cho cả epoch 1 và 2 rồi mới giảm một nửa;
-    StepLR ở đây giảm ngay sau epoch 1, giống notebook gốc.
+    'type1': đúng lradj='type1' của LTSF-Linear. Repo gọi adjust_learning_rate(epoch + 1) sau mỗi
+    epoch với lr = lr0 · 0.5^(epoch − 1), nên epoch 1 và 2 cùng chạy lr0, epoch 3 chạy lr0/2, ...
+    'step': StepLR(step_size=1, gamma=0.5) của notebook gốc, giảm một nửa ngay sau epoch 1
+    (checkpoints/dlinear_sgd_ETTh1_L336_H96.pt được huấn luyện theo lịch này).
     """
+    if lradj == "type1":
+        return 0.5 ** max(epoch_idx - 1, 0)
+    if lradj == "step":
+        return 0.5 ** epoch_idx
+    raise ValueError(f"lradj không hỗ trợ: {lradj}")
+
+
+def train_sgd(model, train_loader, val_loader, ckpt_path, lr=5e-3, epochs=10, patience=3, lradj="type1"):
+    """Adam, lịch lr theo lradj, dừng sớm theo MSE validation, nạp lại trọng số tốt nhất."""
     criterion = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda e: lr_factor(e, lradj))
     best_val, counter, history = float("inf"), 0, []
     for epoch in range(epochs):
         train_loss = train_one_epoch(model, train_loader, criterion, optimizer)
