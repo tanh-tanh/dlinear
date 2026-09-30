@@ -258,7 +258,16 @@ Test mới trong `tests/test_irls.py`, lớp `TestPatience`:
 | `scripts/bench_5060ti.py` | thêm `git_commit()` và `save_json()`, ghi `git_commit` vào mọi JSON; `run_irls` nhận `patience`, `constrained`, `quiet`; thêm cột `converged` |
 | `.gitignore` | thêm `results/weights/` (W của cả grid khoảng 1,9 GB) |
 
-## 7.4. Còn để ngỏ
+## 7.4. Sau khi người dùng quyết định
+
+- **Phần A, phương án (a′):** `stopping_check.py --tol0` cho `tol` riêng ở λ = 0 (`EXTRA_MAE_CONFIGS`). Cấu hình `tol = 1e-10, patience = 1`, λ = 0: `3e-11` đạt A.4 và được điền vào `STOP` của `runner.py`.
+- **B.2, MAE:** thêm `checks_mae.py --check dlinear_f64`, so 2L chiều và N⁻¹ ở cùng số vòng, mọi thứ float64.
+- **NLinear trong `runner.py`:** đổi từ `pen = I` sang `pen = diag(1, …, 1, 0)`, tức weight decay thật của NLinear, giống notebook 01.
+  - MSE của NLinear giờ là dạng đóng (ridge trên `nlinear_transform`), nên bỏ nhánh `irls` δ lớn.
+  - Lý do: với `pen = I`, λ* của NLinear luôn bằng 0 (BAO_CAO_TIEU_CHI_DUNG mục 6).
+- **README:** thêm mục "Chạy grid" và quy ước phạt của NLinear.
+
+## 7.5. Còn để ngỏ (trước khi quyết định; giữ lại để đối chiếu)
 
 - **Phần A không đạt A.4**: chỉ trượt ở MSE val tại λ = 0, lệch 1,04e-5–1,1e-5 ở `tol = 1e-10`. Chờ người dùng chọn phương án (BAO_CAO_TIEU_CHI_DUNG mục 1), rồi điền `STOP` trong `runner.py`.
 - **B.2 với MAE trên dữ liệu thật**: cách giải 2L chiều lỗi `J tăng` ở chế độ pha (A_h suy biến, sai số float32 cỡ phạt 2λδ). Chưa chạy bản float64 vì mất khoảng 75 phút.

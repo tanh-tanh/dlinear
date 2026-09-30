@@ -13,7 +13,8 @@ So sánh Linear / DLinear / NLinear (LTSF-Linear, Zeng et al., 2023) tại **ngh
 │   ├── metrics.py        predict, sse, mse, mae (trung bình toàn cục)
 │   ├── models.py         DLinear bằng PyTorch (moving_avg, series_decomp)
 │   └── sgd.py            ETTDataset, evaluate, train_sgd (baseline SGD)
-├── scripts/              irls_dtype_check.py: IRLS float32 / float64 / pha trên GPU (docs/BAO_CAO_IRLS_DTYPE.md)
+├── scripts/              runner.py, select_lambda.py (grid); bench_5060ti.py, stopping_check.py, checks_mae.py,
+│                         irls_dtype_check.py (đo đạc và kiểm, xem docs/BAO_CAO_*.md)
 ├── tests/                kiểm src/ trên dữ liệu giả và kiểm hồi quy các số trong notebook
 ├── notebooks/
 │   ├── 00_dlinear_sgd_baseline.ipynb   (trước là dlinearv2.ipynb)  SGD, ma trận P, dự đoán 1.1–1.3 bản nháp
@@ -50,9 +51,39 @@ Notebook 01 cần mã nguồn LTSF-Linear để nạp đúng module `DLinear` / 
 git clone https://github.com/cure-lab/LTSF-Linear third_party/LTSF-Linear
 ```
 
+## Chạy grid
+
+Cần GPU CUDA (đã kiểm trên RTX 5060 Ti 16 GB, torch 2.14.0+cu130; xem `requirements.txt`). Cả grid ước lượng **khoảng 19 giờ**: ETTh1 3,0 giờ, ETTh2 3,2 giờ, ETTm1 12,9 giờ. MAE chiếm gần hết (docs/BAO_CAO_TIEU_CHI_DUNG.md). Commit trước khi chạy, để cột `git_commit` có nghĩa.
+
+```bash
+export PYTHONIOENCODING=utf-8
+python scripts/runner.py --dry-run                   # danh sách việc còn lại và ước lượng thời gian
+python scripts/runner.py                             # toàn bộ grid → results/lambda_path.csv, results/weights/
+python scripts/runner.py --data ETTh1 ETTh2          # hoặc từng phần; lọc thêm bằng --H, --model, --objective
+```
+
+**Chạy tiếp sau gián đoạn:** chạy lại đúng lệnh cũ.
+
+- Mỗi dòng (dataset, H, mô hình, mục tiêu, λ) được ghi và `flush` ngay khi xong, kèm W ở `results/weights/`, nên các khóa đã có trong `results/lambda_path.csv` sẽ được bỏ qua.
+- Warm start đọc W của λ liền trước từ `results/weights/`, nên đừng xóa thư mục này giữa chừng. Thư mục khoảng 1,9 GB, không commit.
+
+**Chọn λ\*** (theo validation, không bao giờ theo test) và sinh bảng kết quả:
+
+```bash
+python scripts/select_lambda.py                      # → results/results.csv
+```
+
+`results.csv` có hai cách chọn (cột `selection`):
+
+- `val_objective`: metric val của chính mục tiêu huấn luyện.
+- `val_mse`: val MSE cho mọi mục tiêu.
+
+Mỗi cách chọn gồm 216 ô: 3 mô hình × 3 mục tiêu × {λ = 0, λ\*} × 3 dataset × 4 horizon. Cột `lam_at_edge` báo λ\* nằm ở đầu mút lưới.
+
 ## Quy ước
 
 - λ phạt trên **tổng** bình phương lỗi: `‖Y − XWᵀ‖² + λ‖W‖²`, không phạt bias. Tương ứng `weight_decay ≈ 2λ/(n·H)` của PyTorch khi loss là MSE trung bình.
 - MAE/Huber (`irls`) dùng cùng kiểu tổng: MAE là `Σ|r| + λ‖W‖²`, Huber là `Σ ρ_δ(r)/δ + λ‖W‖²` (ρ_δ = r²/2 trong ngưỡng δ). Không phạt bias. DLinear có weight decay dùng `pen = N⁻¹`, giống `ridge_pen`.
+- NLinear có weight decay phạt L − 1 hệ số đầu của W_eff, không phạt lag cuối: `irls(..., constrained=True, pen=diag(1, …, 1, 0))`. Với MSE, cách này bằng ridge trên chuỗi đã trừ giá trị cuối.
 - Mọi mô hình dùng chung trọng số cho 7 kênh (`individual=False`), chuẩn hóa từng kênh bằng mean/std của train, giống baseline SGD.
 - λ chỉ chọn trên validation.

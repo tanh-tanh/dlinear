@@ -276,13 +276,13 @@ Cấu hình:
 - **MAE:** `tol = 1e-10`, `patience = 1`, λ = 0: `tol = 3e-11`.
 - **Huber:** `tol = 1e-9`, `patience = 1`.
 - **MSE:** Linear và DLinear dạng đóng, lưới {0} ∪ logspace(−2, 5, 36). NLinear λ > 0 giải bằng `irls` với δ = 1e6 (2–3 vòng mỗi λ).
-- **NLinear:** `constrained=True, pen = I`, theo quyết định của người dùng.
+- **NLinear:** lần chạy đầu dùng `constrained=True, pen = I`, theo quyết định ban đầu của người dùng. Sau khi thấy λ* = 0, người dùng chọn đổi sang phạt như LTSF: `pen = diag(1, …, 1, 0)`. MSE của NLinear khi đó có nghiệm dạng đóng: ridge trên chuỗi đã trừ giá trị cuối.
 
 | Đại lượng | Giá trị đã biết | Đo được | Đạt? |
 |---|---|---|---|
 | Linear, MSE, λ = 0: MSE test | 0,3702 | 0,370235 | ✓ |
 | DLinear, MSE, λ* (`val_mse`) | λ* ≈ 562, MSE test 0,3697 | λ* = 398, MSE test 0,369864 | λ* cùng bậc ✓; MSE test lệch 1,6e-4 ✗ (ngưỡng 1e-4), giải thích bên dưới |
-| NLinear, MSE, λ* (`val_mse`) | λ* ≈ 1780 | **λ* = 0** | **✗**, giải thích bên dưới |
+| NLinear, MSE, λ* (`val_mse`) | λ* ≈ 1780 | `pen = I`: **λ* = 0** ✗; sau khi đổi sang `diag(1, …, 1, 0)`: **λ* = 1585**, val 0,670027 | ✓ sau khi sửa |
 | Linear, MAE, λ = 0: MSE / MAE test | 0,3653 / 0,3833 | 0,365337 / 0,383321 | ✓ |
 | Linear, Huber, λ = 0: MSE / MAE test | 0,3678 / 0,3880 | 0,367800 / 0,387989 | ✓ |
 | DLinear, MAE, λ* | 100 (MAE val) / 300 (MSE val) theo Phần A | 100 / 300 | ✓ |
@@ -299,13 +299,24 @@ Cấu hình:
 - Với `pen = I` trên cả L hệ số của W_eff, MSE val tăng đơn điệu theo λ: 0,670366 ở λ = 0, 0,670655 ở λ = 631, 0,675665 ở λ = 6310. Vì vậy λ* = 0.
 - Notebook 01 (`W_nlinear_wd`) phạt theo weight decay thật của NLinear, tức chỉ L − 1 hệ số đầu, không phạt hệ số lag cuối. Với cách đó λ* = 1778 và MSE val giảm từ 0,670366 xuống 0,670036.
 - Hệ số lag cuối của NLinear lớn, vì các hàng cộng bằng 1 và lag cuối mang phần lớn trọng số. Phạt nó kéo dự báo về 0, nên luôn làm hỏng. Hiệu ứng tương tự thấy ở NLinear MAE và Huber: λ* ở đầu mút dưới, lưới tự mở rộng xuống 1/3 và 1/9.
-- **Đây là điểm dừng theo mục 6** ("chạy thử ở C.5 lệch các giá trị đã biết quá ngưỡng"). Chưa sửa gì, chờ người dùng quyết định.
+- **Đây là điểm dừng theo mục 6** ("chạy thử ở C.5 lệch các giá trị đã biết quá ngưỡng"). Người dùng chọn đổi sang phạt như LTSF. Sau khi sửa:
+  - Đã xóa 60 dòng NLinear cũ (bản sao lưu nằm ngoài repo) và chạy lại. Commit `d2490a5`.
+  - **MSE:** λ* = 1585, val 0,670027, MSE test 0,369459. Notebook cho λ* = 1778, val 0,670036, test 0,369424. Lưới mới có 1585 chứ không có 1778, nên λ* cùng bậc và val gần nhau.
+  - **MAE:** λ* = 300 theo MAE val, 3000 theo MSE val.
+  - **Huber:** λ* = 300 theo Huber val, 1000 theo MSE val.
+  - Không còn λ* nào của NLinear ở đầu mút.
 
 **Ghi chú khác:**
 
 - **Warm start với `patience = 1` vẫn dừng sau 1–2 vòng ở λ = 1, 3.** Đúng như lúc kiểm Phần A với cấu hình này (vẫn đạt ba tiêu chí): vì λ nhỏ, nghiệm gần như không đổi so với λ = 0.
-- **Mở rộng ở đầu mút dưới** (λ = 1/3, 1/9) chỉ chạy 1 vòng mỗi giá trị, vì các λ này gần như không khác λ = 0. Tốn không đáng kể.
-- **Chưa chạy** `select_lambda.py` và `runner.py --dry-run` cho cả grid trong phiên này, vì công cụ chạy lệnh bị chặn tạm thời ở cuối phiên. Cũng chưa viết mục "Chạy grid" trong README (C.6), vì đang chờ quyết định về NLinear.
+- **Mở rộng ở đầu mút dưới** (λ = 1/3, 1/9) còn xảy ra ở Linear MAE, vì λ* = 0. Mỗi giá trị chỉ chạy 1 vòng, vì các λ này gần như không khác λ = 0; tốn không đáng kể.
+- **`select_lambda.py`:** 9 đường λ → 36 dòng (18 ô cho mỗi cách chọn) trong `results/results.csv`.
+- **`runner.py --dry-run` cho cả grid:** 99 đường còn lại, khoảng **19,2 giờ**.
+  - Theo dataset: ETTh1 3,0 giờ, ETTh2 3,2 giờ, ETTm1 12,9 giờ.
+  - Theo mục tiêu: MAE 18,7 giờ, Huber 0,5 giờ, MSE không đáng kể.
+  - Ước lượng này dùng số vòng đo ở Phần A (MAE 1 796 và Huber 44 vòng cho cả lưới) và s/vòng từng ô của báo cáo 5060 Ti.
+  - Lần chạy đơn lẻ dài nhất là MAE λ = 0 ở ETTm1 H = 720: khoảng 470 vòng × 4,7 s ≈ 37 phút, dưới ngưỡng 60 phút.
+- **README:** đã thêm mục "Chạy grid" (C.6).
 
 ## 7. Ghi chú
 
