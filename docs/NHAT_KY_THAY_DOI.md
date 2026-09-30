@@ -266,8 +266,9 @@ Test mới trong `tests/test_irls.py`, lớp `TestPatience`:
   - MSE của NLinear giờ là dạng đóng (ridge trên `nlinear_transform`), nên bỏ nhánh `irls` δ lớn.
   - Lý do: với `pen = I`, λ* của NLinear luôn bằng 0 (BAO_CAO_TIEU_CHI_DUNG mục 6).
 - **README:** thêm mục "Chạy grid" và quy ước phạt của NLinear.
+- **Test mới** `TestPenalty.test_nlinear_penalty_equals_transform_ridge`: NLinear ràng buộc với `pen = diag(1, …, 1, 0)`, δ lớn, bằng ridge trên `nlinear_transform`. Đo được khoảng 1e-15, ngưỡng 1e-10. Test cũng đòi nghiệm khác phạt I. Test: 40 → **41, tất cả đạt**.
 
 ## 7.5. Còn để ngỏ (trước khi quyết định; giữ lại để đối chiếu)
 
-- **Phần A không đạt A.4**: chỉ trượt ở MSE val tại λ = 0, lệch 1,04e-5–1,1e-5 ở `tol = 1e-10`. Chờ người dùng chọn phương án (BAO_CAO_TIEU_CHI_DUNG mục 1), rồi điền `STOP` trong `runner.py`.
-- **B.2 với MAE trên dữ liệu thật**: cách giải 2L chiều lỗi `J tăng` ở chế độ pha (A_h suy biến, sai số float32 cỡ phạt 2λδ). Chưa chạy bản float64 vì mất khoảng 75 phút.
+- ~~**Phần A không đạt A.4**~~ **Đã xử lý** bằng phương án (a′), mục 7.4.: chỉ trượt ở MSE val tại λ = 0, lệch 1,04e-5–1,1e-5 ở `tol = 1e-10`. Chờ người dùng chọn phương án (BAO_CAO_TIEU_CHI_DUNG mục 1), rồi điền `STOP` trong `runner.py`.
+- ~~**B.2 với MAE trên dữ liệu thật**~~ **Đã xử lý** bằng phép so float64 ở cùng số vòng (`dlinear_f64`), mục 7.4.: cách giải 2L chiều lỗi `J tăng` ở chế độ pha (A_h suy biến, sai số float32 cỡ phạt 2λδ). Chưa chạy bản float64 vì mất khoảng 75 phút.

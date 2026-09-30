@@ -144,6 +144,26 @@ class TestPenalty(unittest.TestCase):
         err = rel_err(W, W_ref)
         self.assertLess(err, 1e-10, msg=f"rel err = {err:.2e}")
 
+    def test_nlinear_penalty_equals_transform_ridge(self):
+        """NLinear có weight decay: ràng buộc tổng hàng = 1 và phạt diag(1, …, 1, 0) (không phạt lag cuối)
+        bằng ridge trên chuỗi đã trừ giá trị cuối (thế w_L = 1 − Σ_{j<L} w_j). δ lớn → MSE. Đo: ~1e-15."""
+        from src.operators import nlinear_effective, nlinear_transform
+        from src.solvers import fit_with_bias, ridge
+        L = self.p - 1
+        D = torch.diag(torch.cat([torch.ones(L - 1, dtype=DT), torch.zeros(1, dtype=DT)]))
+        lam = 25 / self.D                                         # λ_mse = 2δλ = 50
+        W, n_iter = irls(self.Xt, self.Y, self.D, self.W0, lam=lam, pen=D, constrained=True)
+        self.assertEqual(n_iter, 2)
+        X, Y = self.Xt[:, :-1].numpy(), self.Y.numpy()
+        Xn, Yn, _ = nlinear_transform(X, Y)
+        Wn, b = fit_with_bias(lambda A, B: ridge(A, B, 50.0), Xn, Yn)
+        W_ref = torch.from_numpy(np.concatenate([nlinear_effective(Wn), b[:, None]], axis=1))
+        err = rel_err(W, W_ref)
+        self.assertLess(err, 1e-10, msg=f"rel err = {err:.2e}")
+        # phạt diag khác phạt I (không để test đạt tầm thường)
+        W_I, _ = irls(self.Xt, self.Y, self.D, self.W0, lam=lam, constrained=True)
+        self.assertGreater(rel_err(W_I, W_ref), 1e-3)
+
     @unittest.skipIf(minimize is None, "cần scipy")
     def test_mae_matches_qp(self):
         """MAE + λ = quy hoạch bậc hai: min Σt + λ wᵀ Pen w  s.t.  −t ≤ y − Xβ ≤ t (SLSQP).

@@ -50,7 +50,7 @@ Kết quả theo từng tiêu chí:
 ## 2. Thay đổi code
 
 - `irls(..., patience=1)`: xem [NHAT_KY_THAY_DOI.md](NHAT_KY_THAY_DOI.md) mục 7.1.
-- Test: 35 → **40, tất cả đạt**. Có 2 test `patience`, 2 test tương đương DLinear và 1 test NLinear MAE.
+- Test: 35 → **41, tất cả đạt**. Có 2 test `patience`, 2 test tương đương DLinear, 1 test NLinear MAE và 1 test phạt NLinear diag(1, …, 1, 0).
 
 ## 3. Nghiệm tham chiếu (A.2)
 
@@ -88,7 +88,7 @@ Cùng ô, lưới λ {0, 1, 3, …, 10 000} tăng dần. Khởi tạo lạnh: ri
 | 1e-9 | 5 | 930 / 1 628 | 148 / 260 | ✓ | ✓ 1,2e-5 vs 1,1e-6 | ✗ 1,3e-5 vs 2,7e-5 | 3,0e-6 / **2,8e-5** (λ = 0) | ✗ |
 | 1e-10 | 1 | 1 696 / 2 659 | 268 / 421 | ✓ | ✓ 1,3e-5 vs 1,0e-6 | ✓ 1,5e-5 vs 9,7e-6 | 1,1e-6 / **1,1e-5** (λ = 0) | ✗ |
 | 1e-10 | 5 | 1 730 / 2 699 | 275 / 430 | ✓ | ✓ 1,3e-5 vs 9,8e-7 | ✓ 1,5e-5 vs 9,2e-6 | 1,1e-6 / **1,04e-5** (λ = 0) | ✗ |
-| **1e-10, λ = 0: 3e-11** (a′) | 1 | 1 796 / 2 785 | 290 / 452 | ✓ | ✓ 1,3e-5 vs 1,0e-6 | ✓ 1,5e-5 vs 9,7e-6 | 1,1e-6 / 6,2e-6 (λ = 0) | **✓** |
+| **1e-10, λ = 0: 3e-11** (a′) | 1 | 1 796 / 2 785 | 290 / 451 | ✓ | ✓ 1,3e-5 vs 1,0e-6 | ✓ 1,5e-5 vs 9,7e-6 | 1,1e-6 / 6,2e-6 (λ = 0) | **✓** |
 
 Cách đọc các cột:
 
@@ -165,7 +165,7 @@ Cách tính: 3 mô hình có λ* × 12 ô, tổng s/vòng của 12 ô là 13,07 
   | Linear/DLinear MSE (dạng đóng) | không đáng kể |
   | **Tổng** | **khoảng 18–19** |
 
-  Mức này không chạy xong trong một đêm; ETTm1 chiếm khoảng 67%.
+  Mức này không chạy xong trong một đêm; ETTm1 chiếm khoảng 67%. Số chính thức là **19,2 giờ** của `runner.py --dry-run` (mục 6), tính theo s/vòng đo được của từng ô.
 - **Giả định chưa đo:** số vòng mỗi đường λ của Linear (`pen = I`) và NLinear (ràng buộc) bằng của DLinear.
 - Có thể chạy từng dataset một lần; `runner.py` chạy tiếp được sau gián đoạn.
 
@@ -269,7 +269,10 @@ Test `TestNLinearMAE.test_matches_constrained_lp` trên dữ liệu `make_data` 
 
 ## 6. Phần C: chạy thử một ô (C.5)
 
-`scripts/runner.py --data ETTh1 --H 96`, commit `bf57cff` (sạch). Kết quả: 170 dòng trong `results/lambda_path.csv` và W ở `results/weights/`. Tổng thời gian khoảng 19 phút.
+`scripts/runner.py --data ETTh1 --H 96`, commit `bf57cff` (sạch). Kết quả: 173 dòng trong `results/lambda_path.csv` và W ở `results/weights/`.
+
+- Lần chạy đầu: dòng đầu ghi lúc 18:44:14, dòng cuối 18:58:31, tức khoảng 15 phút tính cả nạp dữ liệu.
+- NLinear chạy lại sau khi sửa phạt: 19:08:20–19:13:27.
 
 Cấu hình:
 
@@ -293,6 +296,8 @@ Cấu hình:
 - Ở λ = 1000, giá trị có mặt trong cả hai lưới, `runner.py` cho val / test = 0,651630 / 0,369494, trùng notebook tới 6 chữ số. Vậy nghiệm dạng đóng giống hệt.
 - MSE val rất phẳng trên khoảng λ ∈ [316, 631]: 0,651555–0,651564, chênh dưới 1e-5. Lưới của notebook có 562 nên chọn 562; lưới mới có 398 và 631 nên chọn 398.
 - MSE test thì dốc hơn theo λ, nên hai λ* cho MSE test lệch 1,2e-4. Tức ngưỡng 1e-4 trên MSE test không đạt được khi λ* không trùng.
+- **Kiểm thêm:** nghiệm dạng đóng của `runner.py` tại đúng λ = 562,34 cho MSE test 0,369745 và val 0,651558, trùng số của notebook. Vậy độ lệch hoàn toàn do lưới, không do bộ giải.
+- **Theo đúng chữ của tiêu chí C.5, dòng này vẫn là ✗** (1,6e-4 > 1e-4). Nguyên nhân đã rõ và không chặn việc chạy grid.
 
 **NLinear MSE: lệch vì hàm phạt khác, đúng như đã lường trước.**
 
@@ -305,6 +310,9 @@ Cấu hình:
   - **MAE:** λ* = 300 theo MAE val, 3000 theo MSE val.
   - **Huber:** λ* = 300 theo Huber val, 1000 theo MSE val.
   - Không còn λ* nào của NLinear ở đầu mút.
+  - **Hai đường giải NLinear cùng định nghĩa một mô hình.** Ở λ = 1000, `irls` (δ = 1e6, ràng buộc, `pen = diag(1, …, 1, 0)`) trùng nghiệm dạng đóng tới 3,2e-13, cả khi lập A_h bằng float32 lẫn float64. MAE và Huber dùng đường thứ nhất, MSE dùng đường thứ hai.
+  - Runner khớp notebook tại λ = 1000: val / test 0,67004364 / 0,36961535, notebook 0,67004364 / 0,36961536.
+  - Test mới `TestPenalty.test_nlinear_penalty_equals_transform_ridge` kiểm điều này trên dữ liệu giả.
 
 **Ghi chú khác:**
 
