@@ -49,8 +49,10 @@ IRLS_LAMS = [0.0, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0, 3000.0, 10000.0]
 MAX_EXTEND = 2
 CHUNK = 16
 MAX_ITER = 1000
-# Tiêu chí dừng theo docs/BAO_CAO_TIEU_CHI_DUNG.md (Phần A của NHIEM_VU_2)
-STOP = {"MAE": {"tol": None, "patience": None}, "Huber": {"tol": None, "patience": None}}
+# Tiêu chí dừng theo docs/BAO_CAO_TIEU_CHI_DUNG.md (Phần A của NHIEM_VU_2, phương án a′): λ = 0 khởi tạo
+# từ nghiệm MSE, mặt MAE phẳng nhất ở đó nên cần tol chặt hơn (tol_lam0); λ > 0 warm start.
+STOP = {"MAE": {"tol": 1e-10, "patience": 1, "tol_lam0": 3e-11},
+        "Huber": {"tol": 1e-9, "patience": 1, "tol_lam0": 1e-9}}
 BIG_DELTA = 1e6                             # MSE của NLinear qua irls: δ lớn hơn mọi phần dư
 MSE_IRLS = {"tol": 1e-15, "patience": 1, "max_iter": 20}
 DELTAS = {"MSE": None, "MAE": MAE_DELTA, "Huber": HUBER_DELTA}
@@ -275,9 +277,10 @@ def run_irls_path(cell, model, obj, done, writer):
             W0, init = np.load(weight_path(cell.ds, cell.H, model, "MSE", 0)), "ols"
         else:
             W0, init = np.load(weight_path(cell.ds, cell.H, model, obj, max(below))), "warm"
-        W, n, conv, sec = cell.run_irls(model, W0, delta, lam, tol, patience)
+        t = STOP[obj]["tol_lam0"] if lam == 0 else tol
+        W, n, conv, sec = cell.run_irls(model, W0, delta, lam, t, patience)
         row = base_row(cell, model, obj, lam)
-        row.update(init=init, n_iter=n, converged=conv, seconds=sec, tol=tol, patience=patience,
+        row.update(init=init, n_iter=n, converged=conv, seconds=sec, tol=t, patience=patience,
                    gram_dtype="float32", **cell.evaluate(W, model, obj, lam))
         writer.write(row, W)
         done[key] = row
@@ -310,8 +313,9 @@ def estimate(jobs, done):
             s_iter[(ds, H)] = c["s_per_iter_median"] if c else None
     iters = {}
     for obj in ("MAE", "Huber"):
-        tol, pat = STOP[obj]["tol"], STOP[obj]["patience"]
-        f = ROOT / "results" / "stopping" / f"sweep_{obj.lower()}_tol{tol:.0e}_p{pat}.json"
+        tol, pat, tol0 = STOP[obj]["tol"], STOP[obj]["patience"], STOP[obj]["tol_lam0"]
+        suffix = f"_lam0tol{tol0:.0e}" if tol0 != tol else ""
+        f = ROOT / "results" / "stopping" / f"sweep_{obj.lower()}_tol{tol:.0e}_p{pat}{suffix}.json"
         sw = json.loads(f.read_text(encoding="utf-8")) if f.exists() else None
         iters[obj] = sw["summary"]["warm"]["total_iter"] if sw else None
     total, lines = 0.0, []

@@ -2,6 +2,7 @@
 
     python scripts/checks_mae.py --check unique        # B.1: MAE từ ba điểm khởi tạo có cùng nghiệm?
     python scripts/checks_mae.py --check dlinear       # B.2: DLinear 2L chiều ≡ L chiều với pen = N⁻¹
+    python scripts/checks_mae.py --check dlinear_f64   # B.2, MAE: so hai cách ở cùng số vòng, float64
 
 Kết quả: results/checks_mae/*.json. Test trên dữ liệu giả của cùng các phép kiểm ở tests/test_irls.py.
 """
@@ -165,10 +166,58 @@ def check_dlinear(lam=100.0, k=25):
                                      "results": out})
 
 
+def check_dlinear_f64(lam=100.0, k=25, iters=20):
+    """B.2 cho MAE ở cùng số vòng, mọi thứ float64 (gram_dtype=None).
+
+    Chế độ pha không giải được 2L chiều với MAE (A_h suy biến, sai số float32 cỡ phạt 2λδ). Trong số học
+    chính xác hai dãy lặp (2L chiều với phạt I, L chiều với N⁻¹) trùng nhau từng vòng, nên so J và W_eff
+    của hai cách ở mỗi vòng trong `iters` vòng đầu.
+    """
+    d = load_cell("ETTh1", 96)
+    L = B.L
+    P = build_P(L, k)
+    Ninv = np.linalg.inv(build_N(P))
+    Zt = np.concatenate([make_Z(d["X"], P), np.ones((len(d["X"]), 1))], axis=1)
+    Xg, Yg, Zg = to_gpu(d["Xt"], d["Y"], Zt)
+    del Zt
+    W_ols = ols_init(d["X"], d["Y"])
+    G0 = np.concatenate([W_ols[:, :-1], W_ols[:, :-1], W_ols[:, -1:]], axis=1)
+
+    def run(Xin, W0, pen, to_eff):
+        Js, Ws = [], []
+        t0 = B.sync_time()
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            irls(Xin, Yg, MAE_DELTA, torch.as_tensor(W0, device=B.DEV), lam=lam, pen=pen, max_iter=iters,
+                 tol=0.0, gram_dtype=None, chunk=CHUNK,
+                 callback=lambda it, W, J: (Js.append(J.item()), Ws.append(to_eff(W.cpu().numpy()))))
+        return Js, Ws, B.sync_time() - t0, [str(w.message) for w in caught]
+
+    eff = lambda G: np.concatenate([dlinear_effective(G[:, :L], G[:, L:2 * L], P), G[:, -1:]], axis=1)
+    print(f"[dlinear_f64 mae] λ = {lam}, {iters} vòng, float64", flush=True)
+    J1, W1, s1, w1 = run(Zg, G0, None, eff)
+    J2, W2, s2, w2 = run(Xg, W_ols, Ninv, lambda W: W)
+    per_iter = [{"iter": i + 1, "J_2L": a, "J_Ninv": b, "J_rel": (a - b) / b, "W_eff_rel": rel(x, y)}
+                for i, (a, b, x, y) in enumerate(zip(J1, J2, W1, W2))]
+    m1, m2 = metrics64(W1[-1], d, MAE_DELTA), metrics64(W2[-1], d, MAE_DELTA)
+    res = {"cell": "ETTh1 H=96", "loss": "mae", "delta": MAE_DELTA, "lam": lam, "k": k, "iters": iters,
+           "mode": "float64 (gram_dtype=None)", "init": "L chiều: W_OLS; 2L chiều: W_t = W_s = W_OLS",
+           "seconds_2L": s1, "seconds_Ninv": s2, "warnings_2L": w1, "warnings_Ninv": w2,
+           "max_abs_J_rel": max(abs(r["J_rel"]) for r in per_iter),
+           "max_W_eff_rel": max(r["W_eff_rel"] for r in per_iter),
+           "metrics_2L": m1, "metrics_Ninv": m2, "per_iter": per_iter}
+    save_json(OUT / "dlinear_f64.json", res)
+    for r in per_iter[:3] + per_iter[-3:]:
+        print(f"  vòng {r['iter']}: J 2L {r['J_2L']:.12e}, N⁻¹ {r['J_Ninv']:.12e}, lệch {r['J_rel']:+.1e}, "
+              f"‖ΔW_eff‖/‖W‖ {r['W_eff_rel']:.1e}")
+    print(f"  lớn nhất: J {res['max_abs_J_rel']:.1e}, W_eff {res['max_W_eff_rel']:.1e}; {s1:.0f} s / {s2:.0f} s; "
+          f"MSE test {m1['mse_te']:.8f} / {m2['mse_te']:.8f}")
+
+
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("--check", choices=["unique", "dlinear"], required=True)
+    ap.add_argument("--check", choices=["unique", "dlinear", "dlinear_f64"], required=True)
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
-    {"unique": check_unique, "dlinear": check_dlinear}[a.check]()
+    {"unique": check_unique, "dlinear": check_dlinear, "dlinear_f64": check_dlinear_f64}[a.check]()

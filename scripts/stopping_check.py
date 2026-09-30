@@ -33,6 +33,8 @@ REF_LAMS = [0, 30, 100, 300, 1000]
 REF_ITERS = 2000
 REF_EVERY = 50
 MAE_CONFIGS = [(1e-9, 1), (1e-9, 5), (1e-10, 1), (1e-10, 5)]
+# phương án (a′) sau khi A.3 không đạt: λ = 0 dùng tol riêng (docs/BAO_CAO_TIEU_CHI_DUNG.md mục 4.4)
+EXTRA_MAE_CONFIGS = [(1e-10, 1, 3e-11)]
 HUBER_CONFIGS = [(1e-9, 1), (1e-9, 5)]
 GAP_TOL = 1e-5            # tiêu chí 3: lệch nghiệm tham chiếu
 
@@ -112,12 +114,14 @@ def step_reference(cell, lams, force=False):
 # A.3: quét λ, lạnh và warm
 # ---------------------------------------------------------------------------
 
-def sweep_name(loss, tol, patience):
-    return OUT / f"sweep_{loss}_tol{tol:.0e}_p{patience}.json"
+def sweep_name(loss, tol, patience, tol0=None):
+    suffix = f"_lam0tol{tol0:.0e}" if tol0 is not None else ""
+    return OUT / f"sweep_{loss}_tol{tol:.0e}_p{patience}{suffix}.json"
 
 
-def step_sweep(cell, loss, tol, patience, force=False, extend=2):
-    f = sweep_name(loss, tol, patience)
+def step_sweep(cell, loss, tol, patience, force=False, extend=2, tol0=None):
+    """tol0: tol riêng cho λ = 0 (khởi tạo từ OLS, mặt mục tiêu phẳng nhất); mặc định bằng tol."""
+    f = sweep_name(loss, tol, patience, tol0)
     if f.exists() and not force:
         print(f"bỏ qua: đã có {f.name}")
         return
@@ -125,7 +129,8 @@ def step_sweep(cell, loss, tol, patience, force=False, extend=2):
     own = "mae_va" if loss == "mae" else "huber1_va"
 
     def one(lam, W0, mode):
-        r, W, _ = run_irls(cell.Xg, cell.Yg, torch.tensor(W0, device=B.DEV), delta, tol, CHUNK,
+        t = tol0 if (lam == 0 and tol0 is not None) else tol
+        r, W, _ = run_irls(cell.Xg, cell.Yg, torch.tensor(W0, device=B.DEV), delta, t, CHUNK,
                            lam=lam, pen=cell.Ninv if lam else None, patience=patience, quiet=True)
         r.pop("trace")
         r.pop("per_iter_seconds")
@@ -158,7 +163,8 @@ def step_sweep(cell, loss, tol, patience, force=False, extend=2):
                  "best_lam_own": argmin(rows[mo], own), "best_lam_mse": argmin(rows[mo], "mse_va")}
             for mo in rows}
     save_json(f, {"cell": "ETTh1 H=96", "model": f"DLinear (pen = N⁻¹, k = {K})", "loss": loss,
-                  "delta": delta, "tol": tol, "patience": patience, "chunk": CHUNK, "lams": lams,
+                  "delta": delta, "tol": tol, "tol_lam0": tol0 if tol0 is not None else tol,
+                  "patience": patience, "chunk": CHUNK, "lams": lams,
                   "extended": added, "own_metric": own,
                   "cold_init": "ridge MSE dạng đóng, Pen = 2δλ·N⁻¹ (mục 1.5 NHAT_KY); λ = 0 là OLS",
                   "warm_init": "nghiệm IRLS của λ liền trước; λ = 0 chép từ lạnh",
@@ -223,18 +229,19 @@ def step_analyze():
               f"({dr['mae_va']:.1e} / {dr['mse_va']:.1e}), {r['n_iter']} vòng, {r['seconds']:.0f} s")
 
     configs = []
-    for tol, pat in MAE_CONFIGS:
-        sw = load_json(sweep_name("mae", tol, pat))
+    for tol, pat, tol0 in [(t, p, None) for t, p in MAE_CONFIGS] + EXTRA_MAE_CONFIGS:
+        sw = load_json(sweep_name("mae", tol, pat, tol0))
+        tag = f"mae tol={tol:.0e} p={pat}" + (f" tol(λ=0)={tol0:.0e}" if tol0 else "")
         if not sw:
-            print(f"thiếu sweep mae tol={tol:.0e} p={pat}")
+            print(f"thiếu sweep {tag}")
             continue
         det, ok = criteria(sw, ref)
         s = sw["summary"]
-        configs.append({"tol": tol, "patience": pat, "iters_warm": s["warm"]["total_iter"],
+        configs.append({"tol": tol, "patience": pat, "tol_lam0": tol0 or tol, "iters_warm": s["warm"]["total_iter"],
                         "iters_cold": s["cold"]["total_iter"], "seconds_warm": s["warm"]["total_seconds"],
                         "seconds_cold": s["cold"]["total_seconds"], "criteria": ok, "detail": det,
                         "pass": all(ok.values())})
-        print(f"\n[mae tol={tol:.0e} p={pat}] vòng warm {s['warm']['total_iter']}, lạnh {s['cold']['total_iter']}; "
+        print(f"\n[{tag}] vòng warm {s['warm']['total_iter']}, lạnh {s['cold']['total_iter']}; "
               f"tiêu chí 1/2/3: {ok['c1']}/{ok['c2']}/{ok['c3']}")
         for key, d in det.items():
             print(f"  {key}: λ* lạnh {d['lam_cold']}, warm {d['lam_warm']}, tham chiếu {d['lam_ref']} "
@@ -252,10 +259,12 @@ def step_analyze():
             huber[f"tol{tol:.0e}_p{pat}"] = {"summary": sw["summary"]}
             print(f"\n[huber tol={tol:.0e} p={pat}] " + "; ".join(
                 f"{mo}: {v['total_iter']} vòng, λ* {v['best_lam_own']} / {v['best_lam_mse']}" for mo, v in sw["summary"].items()))
-    print("\n→ cấu hình chọn: " + (f"tol = {chosen['tol']:.0e}, patience = {chosen['patience']}" if chosen
+    print("\n→ cấu hình chọn: " + (f"tol = {chosen['tol']:.0e}, patience = {chosen['patience']}, "
+                                  f"tol λ = 0 = {chosen['tol_lam0']:.0e}" if chosen
                                   else "KHÔNG cấu hình nào đạt"))
     save_json(OUT / "acceptance.json", {"reference_lams": REF_LAMS, "gap_tol": GAP_TOL, "configs": configs,
-                                        "chosen": None if not chosen else {"tol": chosen["tol"], "patience": chosen["patience"]},
+                                        "chosen": None if not chosen else {"tol": chosen["tol"], "patience": chosen["patience"],
+                                                                           "tol_lam0": chosen["tol_lam0"]},
                                         "rule": "rẻ nhất theo tổng vòng warm trong các cấu hình đạt cả ba tiêu chí",
                                         "huber": huber})
 
@@ -267,6 +276,7 @@ if __name__ == "__main__":
     ap.add_argument("--loss", choices=list(LOSSES), default="mae")
     ap.add_argument("--tol", type=float)
     ap.add_argument("--patience", type=int)
+    ap.add_argument("--tol0", type=float, help="sweep: tol riêng cho λ = 0")
     ap.add_argument("--lam", type=float, nargs="*", help="reference: chỉ chạy các λ này")
     ap.add_argument("--all", action="store_true", help="sweep: mọi cấu hình của A.3")
     ap.add_argument("--force", action="store_true")
@@ -283,4 +293,4 @@ if __name__ == "__main__":
                 for tol, pat in cfgs:
                     step_sweep(cell, loss, tol, pat, a.force)
         else:
-            step_sweep(cell, a.loss, a.tol, a.patience, a.force)
+            step_sweep(cell, a.loss, a.tol, a.patience, a.force, tol0=a.tol0)

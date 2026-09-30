@@ -14,8 +14,8 @@
   "tf32_cudnn": false,
   "float32_matmul_precision": "highest"
  },
- "git_commit": "86c012c82ac5-dirty",
- "date": "2026-09-30 17:04:27",
+ "git_commit": "5888f61e85e4-dirty",
+ "date": "2026-09-30 18:36:46",
  "reference_lams": [
   0,
   30,
@@ -28,6 +28,7 @@
   {
    "tol": 1e-09,
    "patience": 1,
+   "tol_lam0": 1e-09,
    "iters_warm": 895,
    "iters_cold": 1588,
    "seconds_warm": 142.40247199998703,
@@ -110,6 +111,7 @@
   {
    "tol": 1e-09,
    "patience": 5,
+   "tol_lam0": 1e-09,
    "iters_warm": 930,
    "iters_cold": 1628,
    "seconds_warm": 148.49513139999908,
@@ -192,6 +194,7 @@
   {
    "tol": 1e-10,
    "patience": 1,
+   "tol_lam0": 1e-10,
    "iters_warm": 1696,
    "iters_cold": 2659,
    "seconds_warm": 267.8637080999906,
@@ -274,6 +277,7 @@
   {
    "tol": 1e-10,
    "patience": 5,
+   "tol_lam0": 1e-10,
    "iters_warm": 1730,
    "iters_cold": 2699,
    "seconds_warm": 275.2532355000076,
@@ -352,9 +356,96 @@
     }
    },
    "pass": false
+  },
+  {
+   "tol": 1e-10,
+   "patience": 1,
+   "tol_lam0": 3e-11,
+   "iters_warm": 1796,
+   "iters_cold": 2785,
+   "seconds_warm": 290.23301800000627,
+   "seconds_cold": 451.0259629999855,
+   "criteria": {
+    "c1": true,
+    "c2": true,
+    "c3": true
+   },
+   "detail": {
+    "mae_va": {
+     "lam_cold": 100,
+     "lam_warm": 100,
+     "lam_ref": 100,
+     "lam_cold_on_ref": 100,
+     "lam_warm_on_ref": 100,
+     "c1": true,
+     "c2": true,
+     "c2_detail": {
+      "cold": {
+       "lam_best": 100,
+       "lam_second": 30,
+       "gap": 1.2490419764032978e-05,
+       "warm_minus_cold_max": 1.003329153426158e-06,
+       "ok": true
+      },
+      "warm": {
+       "lam_best": 100,
+       "lam_second": 30,
+       "gap": 1.2630354838449875e-05,
+       "warm_minus_cold_max": 1.003329153426158e-06,
+       "ok": true
+      }
+     },
+     "warm_minus_ref": {
+      "0": -1.2962331363830515e-07,
+      "30": -1.0833881758376407e-06,
+      "100": -1.882579350187541e-07,
+      "300": -4.054842427381189e-07,
+      "1000": -9.759555202881742e-07
+     },
+     "c3": true
+    },
+    "mse_va": {
+     "lam_cold": 300,
+     "lam_warm": 300,
+     "lam_ref": 300,
+     "lam_cold_on_ref": 300,
+     "lam_warm_on_ref": 300,
+     "c1": true,
+     "c2": true,
+     "c2_detail": {
+      "cold": {
+       "lam_best": 300,
+       "lam_second": 1000,
+       "gap": 1.599501623061883e-05,
+       "warm_minus_cold_max": 9.680221292440727e-06,
+       "ok": true
+      },
+      "warm": {
+       "lam_best": 300,
+       "lam_second": 1000,
+       "gap": 1.4630242280877503e-05,
+       "warm_minus_cold_max": 9.680221292440727e-06,
+       "ok": true
+      }
+     },
+     "warm_minus_ref": {
+      "0": -6.165428046656096e-06,
+      "30": -1.361044712044901e-06,
+      "100": 4.1731430910907363e-07,
+      "300": -5.737052344301219e-07,
+      "1000": -8.29153567583063e-07
+     },
+     "c3": true
+    }
+   },
+   "pass": true
   }
  ],
- "chosen": null,
+ "chosen": {
+  "tol": 1e-10,
+  "patience": 1,
+  "tol_lam0": 3e-11
+ },
  "rule": "rẻ nhất theo tổng vòng warm trong các cấu hình đạt cả ba tiêu chí",
  "huber": {
   "tol1e-09_p1": {
@@ -368,6 +459,22 @@
     "warm": {
      "total_iter": 44,
      "total_seconds": 7.0782016000084695,
+     "best_lam_own": 100,
+     "best_lam_mse": 300
+    }
+   }
+  },
+  "tol1e-09_p5": {
+   "summary": {
+    "cold": {
+     "total_iter": 108,
+     "total_seconds": 17.04467020001175,
+     "best_lam_own": 100,
+     "best_lam_mse": 300
+    },
+    "warm": {
+     "total_iter": 84,
+     "total_seconds": 13.2765395000024,
      "best_lam_own": 100,
      "best_lam_mse": 300
     }

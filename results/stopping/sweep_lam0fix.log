@@ -1,0 +1,20 @@
+  [mae tol=1e-10 p=1 cold] λ = 0: 466 vòng, 75.4 s, MAE val 0.53946418, MSE val 0.66616997
+  [mae tol=1e-10 p=1 cold] λ = 1: 341 vòng, 55.4 s, MAE val 0.53946374, MSE val 0.66616504
+  [mae tol=1e-10 p=1 warm] λ = 1: 1 vòng, 0.2 s, MAE val 0.53946418, MSE val 0.66616999
+  [mae tol=1e-10 p=1 cold] λ = 3: 336 vòng, 54.5 s, MAE val 0.53946348, MSE val 0.66616414
+  [mae tol=1e-10 p=1 warm] λ = 3: 1 vòng, 0.2 s, MAE val 0.53946418, MSE val 0.66617000
+  [mae tol=1e-10 p=1 cold] λ = 10: 341 vòng, 55.4 s, MAE val 0.53946382, MSE val 0.66616132
+  [mae tol=1e-10 p=1 warm] λ = 10: 194 vòng, 31.5 s, MAE val 0.53946425, MSE val 0.66617226
+  [mae tol=1e-10 p=1 cold] λ = 30: 330 vòng, 53.6 s, MAE val 0.53946347, MSE val 0.66615273
+  [mae tol=1e-10 p=1 warm] λ = 30: 262 vòng, 42.5 s, MAE val 0.53946260, MSE val 0.66616223
+  [mae tol=1e-10 p=1 cold] λ = 100: 292 vòng, 47.5 s, MAE val 0.53945098, MSE val 0.66610959
+  [mae tol=1e-10 p=1 warm] λ = 100: 265 vòng, 43.0 s, MAE val 0.53944997, MSE val 0.66611775
+  [mae tol=1e-10 p=1 cold] λ = 300: 235 vòng, 37.9 s, MAE val 0.53947046, MSE val 0.66606825
+  [mae tol=1e-10 p=1 warm] λ = 300: 212 vòng, 34.0 s, MAE val 0.53947021, MSE val 0.66607793
+  [mae tol=1e-10 p=1 cold] λ = 1000: 178 vòng, 28.6 s, MAE val 0.53967127, MSE val 0.66608424
+  [mae tol=1e-10 p=1 warm] λ = 1000: 157 vòng, 25.2 s, MAE val 0.53967097, MSE val 0.66609256
+  [mae tol=1e-10 p=1 cold] λ = 3000: 145 vòng, 23.2 s, MAE val 0.54082978, MSE val 0.66720118
+  [mae tol=1e-10 p=1 warm] λ = 3000: 129 vòng, 20.7 s, MAE val 0.54082864, MSE val 0.66720647
+  [mae tol=1e-10 p=1 cold] λ = 10000: 121 vòng, 19.5 s, MAE val 0.54556996, MSE val 0.67334834
+  [mae tol=1e-10 p=1 warm] λ = 10000: 109 vòng, 17.5 s, MAE val 0.54556865, MSE val 0.67335254
+→ results\stopping\sweep_mae_tol1e-10_p1_lam0tol3e-11.json
