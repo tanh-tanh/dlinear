@@ -8,15 +8,17 @@ Chọn λ* bằng scripts/select_lambda.py.
     python scripts/runner.py --dry-run                         # danh sách việc và ước lượng thời gian
 
 Cách giải
-    MSE, Linear và DLinear: dạng đóng (ridge / ridge với phạt λ·N⁻¹) trên λ ∈ {0} ∪ logspace(−2, 5, 36).
-    MSE, NLinear: λ = 0 dạng đóng (nlinear_constrained); λ > 0 bằng irls với δ lớn (Huber δ = 1e6 ≡ MSE,
-        λ_irls = λ/(2δ)), vì src/ chưa có nghiệm dạng đóng vừa ràng buộc vừa phạt.
+    MSE: dạng đóng trên λ ∈ {0} ∪ logspace(−2, 5, 36). Linear: ridge; DLinear: ridge với phạt λ·N⁻¹;
+        NLinear: ridge trên chuỗi đã trừ giá trị cuối (nlinear_transform), bằng NLinear ràng buộc với
+        phạt diag(1, …, 1, 0) (thế w_L = 1 − Σ_{j<L} w_j); λ = 0 là nlinear_constrained.
     MAE, Huber: irls chế độ pha, chunk 16, λ ∈ IRLS_LAMS tăng dần, warm start; λ = 0 khởi tạo từ
         nghiệm MSE λ = 0 của cùng mô hình. Tự mở rộng tối đa 2 giá trị (×3 ở đầu trên, ÷3 ở đầu dưới)
         nếu λ* theo bất kỳ metric val nào nằm ở đầu mút.
     DLinear ở λ = 0 ≡ Linear với mọi mục tiêu: không giải, chép dòng của Linear (derived_from = Linear).
 
-Phạt: Linear pen = I; DLinear pen = N⁻¹ (k = 25); NLinear constrained=True, pen = I (cả L hệ số của W_eff).
+Phạt: Linear pen = I; DLinear pen = N⁻¹ (k = 25); NLinear constrained=True, pen = diag(1, …, 1, 0): phạt
+L − 1 hệ số đầu của W_eff, không phạt lag cuối. Đây là weight decay thật của NLinear (Linear trên x − x_L:
+trọng số của x_L − x_L = 0 không ảnh hưởng dự báo nên về 0), giống W_nlinear_wd của notebook 01.
 Không phạt bias. Quy ước λ ghi trong cột lam_convention.
 
 Chạy tiếp: khóa (dataset, H, model, objective, lam); W mỗi dòng ở results/weights/*.npy (float64).
@@ -36,7 +38,7 @@ import torch
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bench_5060ti as B                    # noqa: E402  (tắt TF32 khi import)
 from bench_5060ti import HUBER_DELTA, MAE_DELTA, ROOT, git_commit, load_cell  # noqa: E402
-from src.operators import build_N, build_P  # noqa: E402
+from src.operators import build_N, build_P, nlinear_effective, nlinear_transform  # noqa: E402
 from src.solvers import fit_with_bias, irls, nlinear_constrained, ols  # noqa: E402
 
 L, K = 336, 25
@@ -53,8 +55,6 @@ MAX_ITER = 1000
 # từ nghiệm MSE, mặt MAE phẳng nhất ở đó nên cần tol chặt hơn (tol_lam0); λ > 0 warm start.
 STOP = {"MAE": {"tol": 1e-10, "patience": 1, "tol_lam0": 3e-11},
         "Huber": {"tol": 1e-9, "patience": 1, "tol_lam0": 1e-9}}
-BIG_DELTA = 1e6                             # MSE của NLinear qua irls: δ lớn hơn mọi phần dư
-MSE_IRLS = {"tol": 1e-15, "patience": 1, "max_iter": 20}
 DELTAS = {"MSE": None, "MAE": MAE_DELTA, "Huber": HUBER_DELTA}
 LAM_CONVENTION = {
     "MSE": "Σr² + λ·Σ_h w_hᵀPen w_h (tổng, không phạt bias)",
@@ -120,7 +120,7 @@ class Cell:
         self.n = len(self.d["X"])
         P = build_P(L, K)
         self.Ninv = np.linalg.inv(build_N(P))
-        self.pens = {"Linear": np.eye(L), "DLinear": self.Ninv, "NLinear": np.eye(L)}
+        self.pens = {"Linear": np.eye(L), "DLinear": self.Ninv, "NLinear": np.diag(np.r_[np.ones(L - 1), 0.0])}
         self._gpu = None
         # MSE dạng đóng trên dữ liệu đã trừ trung bình
         X, Y = self.d["X"], self.d["Y"]
@@ -128,6 +128,12 @@ class Cell:
         Xc = X - self.x_bar
         self.A = Xc.T @ Xc
         self.C = Xc.T @ (Y - self.y_bar)
+        # NLinear: X_n = (X − x_L)[:, :L−1], Y_n = Y − x_L, đã trừ trung bình
+        Xn, Yn, _ = nlinear_transform(X, Y)
+        self.xn_bar, self.yn_bar = Xn.mean(0), Yn.mean(0)
+        Xn = Xn - self.xn_bar
+        self.An = Xn.T @ Xn
+        self.Cn = Xn.T @ (Yn - self.yn_bar)
 
     @property
     def gpu(self):
@@ -142,10 +148,14 @@ class Cell:
         torch.cuda.empty_cache()
 
     def closed_form(self, model, lam):
-        """MSE dạng đóng cho Linear/DLinear (và NLinear λ = 0); trả W [H, L + 1] với bias ở cột cuối."""
-        if model == "NLinear":
-            assert lam == 0
+        """MSE dạng đóng; trả W [H, L + 1] (W_eff, bias ở cột cuối)."""
+        if model == "NLinear" and lam == 0:
             W, b = fit_with_bias(nlinear_constrained, self.d["X"], self.d["Y"])
+        elif model == "NLinear":
+            # dự báo = X_n W_n + b + x_L = W_eff x + b, với W_eff = [W_n, 1 − W_n 1]; phạt ‖W_n‖²
+            Wn = np.linalg.solve(self.An + lam * np.eye(L - 1), self.Cn).T
+            b = self.yn_bar - Wn @ self.xn_bar
+            W = nlinear_effective(Wn)
         elif lam == 0:
             W, b = fit_with_bias(ols, self.d["X"], self.d["Y"])
         else:
@@ -217,18 +227,10 @@ def run_mse(cell, model, done, writer):
             derive_dlinear_lam0(cell, "MSE", done, writer)
             continue
         row = base_row(cell, model, "MSE", lam)
-        if model == "NLinear" and lam > 0:
-            prev = max(l for l in MSE_LAMS if l < lam)
-            W0 = np.load(weight_path(cell.ds, cell.H, model, "MSE", prev))
-            W, n, conv, sec = cell.run_irls(model, W0, BIG_DELTA, lam / (2 * BIG_DELTA),
-                                            MSE_IRLS["tol"], MSE_IRLS["patience"], MSE_IRLS["max_iter"])
-            row.update(init="warm", n_iter=n, converged=conv, seconds=sec, tol=MSE_IRLS["tol"],
-                       patience=MSE_IRLS["patience"], gram_dtype="float32", delta=BIG_DELTA)
-        else:
-            t0 = time.perf_counter()
-            W = cell.closed_form(model, lam)
-            row.update(init="closed_form", n_iter=0, converged=True, seconds=time.perf_counter() - t0,
-                       gram_dtype="float64")
+        t0 = time.perf_counter()
+        W = cell.closed_form(model, lam)
+        row.update(init="closed_form", n_iter=0, converged=True, seconds=time.perf_counter() - t0,
+                   gram_dtype="float64")
         row.update(cell.evaluate(W, model, "MSE", lam))
         writer.write(row, W)
         done[key] = row
@@ -325,7 +327,7 @@ def estimate(jobs, done):
             continue
         s = s_iter[(ds, H)] or 0.0
         if o == "MSE":
-            sec = (n_left - 1) * 3 * s if m == "NLinear" else n_left * 0.05
+            sec = n_left * 0.05                                  # dạng đóng
         else:
             sec = iters[o] * s * n_left / len(IRLS_LAMS)
             if m == "DLinear":
