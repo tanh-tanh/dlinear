@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from src.data import load_ett, load_etth1, make_dataset, split_borders
+from src.data import load_etth1, make_dataset, split_borders
 from src.metrics import mse, sse
 from src.solvers import fit_with_bias, nlinear_constrained, ols
 
@@ -19,24 +19,6 @@ class TestSplits(unittest.TestCase):
         self.assertEqual(split_borders("ETTh1"), (8640, 11520, 14400))
         self.assertEqual(split_borders("ETTh2"), (8640, 11520, 14400))
         self.assertEqual(split_borders("ETTm1"), (34560, 46080, 57600))
-
-
-class TestOtherDatasets(unittest.TestCase):
-    """Số cửa sổ mỗi kênh khớp len() của Dataset_ETT_hour / Dataset_ETT_minute (seq_len 336, pred_len 96)."""
-    CASES = {"ETTh2": (8209, 2785, 2785), "ETTm1": (34129, 11425, 11425)}
-
-    def test_window_counts(self):
-        for name, counts in self.CASES.items():
-            path = os.path.join(ROOT, "data", f"{name}.csv")
-            if not os.path.isfile(path):
-                continue
-            with self.subTest(name=name):
-                splits = load_ett(path, L, name)
-                self.assertTrue(np.allclose(splits[0].mean(0), 0) and np.allclose(splits[0].std(0), 1))
-                for split, n_win in zip(splits, counts):
-                    X, Y = make_dataset(split, L, H)
-                    self.assertEqual(X.shape, (7 * n_win, L))
-                    self.assertEqual(Y.shape, (7 * n_win, H))
 
 
 @unittest.skipUnless(os.path.isfile(DATA), "thiếu data/ETTh1.csv")

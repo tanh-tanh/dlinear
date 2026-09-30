@@ -91,6 +91,21 @@ class TestDLinear(unittest.TestCase):
             W_b, b_b = fit_with_bias(lambda A, B: ridge(A, B, lam), X, Y)
             self.assertGreater(np.abs(Z @ W_a.T + b_a - (X @ W_b.T + b_b)).max(), 1e-6)
 
+import torch   # thêm lên đầu file, cạnh các import sẵn có
 
+
+def weight_gram(Xt, w, chunk=8):
+    """A[h] = Xtᵀ diag(w[:, h]) Xt cho mọi h, tính theo khối để tiết kiệm bộ nhớ."""
+    n, p = Xt.shape
+    H = w.shape[1]
+    A = torch.empty(H, p, p, dtype=Xt.dtype, device=Xt.device)
+    for h0 in range(0, H, chunk):
+        h1 = min(h0 + chunk, H)
+        A[h0:h1] = torch.einsum('nh,na,nb->hab', w[:, h0:h1], Xt, Xt)
+    return A
+
+
+
+    
 if __name__ == "__main__":
     unittest.main()

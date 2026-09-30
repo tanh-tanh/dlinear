@@ -4,15 +4,15 @@ Lập từ [BAO_CAO_TIEN_DO.md](BAO_CAO_TIEN_DO.md), đối chiếu với [outli
 
 ## 0. Chuẩn bị và dọn dẹp
 
-- [x] Tải `ETTh2.csv`, `ETTm1.csv` vào `data/`
-- [x] Chạy thử `load_ett` trên ETTh2, ETTm1 và kiểm kích thước các tập
-- [x] Clone LTSF-Linear vào `third_party/LTSF-Linear`
-- [x] Chạy lại `notebooks/01_three_predictions.ipynb` để sinh lại `results/three_predictions_sweep.csv`, `results/H1_three_predictions.png`, `results/B2_three_predictions.md`
-- [x] Sửa lịch lr của SGD theo `lradj='type1'` của LTSF-Linear (giữ lr = 0,005 cho epoch 1 và 2). Chạy lại ETTh1 H = 96, seed 42: MSE/MAE test 0,3825 / 0,4048, kém hơn StepLR (0,3766 / 0,3996)
-- [x] Cập nhật số trong outline: 0,3779 → 0,3766; "tốt hơn khoảng 2%" → khoảng 1,7%
-- [x] Xóa hoặc sửa cell lỗi `NameError: pred_V` ở cuối `00_nlinear_closed_form.ipynb`
-- [x] Mục 6 của `00_dlinear_sgd_baseline.ipynb`: chạy lại cell so dự báo DLinear/Linear (max|Δŷ| test = 2,1e-13)
-- [x] Chuyển các notebook sang import từ `src/`, bỏ phần chép hàm
+- [ ] Tải `ETTh2.csv`, `ETTm1.csv` vào `data/`
+- [ ] Chạy thử `load_ett` trên ETTh2, ETTm1 và kiểm kích thước các tập
+- [ ] Clone LTSF-Linear vào `third_party/LTSF-Linear`
+- [ ] Chạy lại `notebooks/01_three_predictions.ipynb` để sinh lại `results/three_predictions_sweep.csv`, `results/H1_three_predictions.png`, `results/B2_three_predictions.md`
+- [ ] Sửa lịch lr của SGD theo `lradj='type1'` của LTSF-Linear (giữ lr = 0,005 cho epoch 1 và 2)
+- [ ] Cập nhật số trong outline: 0,3779 → 0,3766; "tốt hơn khoảng 2%" → khoảng 1,7%
+- [ ] Xóa hoặc sửa cell lỗi `NameError: pred_V` ở cuối `00_nlinear_closed_form.ipynb`
+- [ ] Mục 6 của `00_dlinear_sgd_baseline.ipynb`: chạy lại cell so dự báo DLinear/Linear, hoặc bỏ vì đã làm ở notebook 01
+- [ ] Chuyển các notebook sang import từ `src/`, bỏ phần chép hàm
 
 ## 1. Tuần 2: hàm mục tiêu MSE, MAE, Huber
 
