@@ -1,0 +1,89 @@
+{
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "gpu_mem_gib": 15.90179443359375,
+  "compute_capability": "12.0",
+  "torch": "2.14.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 92400,
+  "driver": "616.92",
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.5",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "float32_matmul_precision": "highest"
+ },
+ "git_commit": "86c012c82ac5-dirty",
+ "date": "2026-09-30 17:13:50",
+ "cell": "ETTh1 H=96",
+ "lam": 100.0,
+ "k": 25,
+ "chunk": 16,
+ "mode": "mixed",
+ "init": "L chiều: W_OLS; 2L chiều: W_t = W_s = W_OLS (cùng W_eff)",
+ "results": {
+  "huber": {
+   "delta": 1.0,
+   "tol": 1e-09,
+   "patience": 5,
+   "direct_2L": {
+    "n_iter": 11,
+    "seconds": 5.756099500002165,
+    "warnings": [],
+    "F": 811363.1610653383,
+    "F_with_2L_penalty": 811363.1610653383,
+    "metrics": {
+     "J_train": 0.14689323889384837,
+     "mse_va": 0.6546952066352749,
+     "mae_va": 0.5404936381079231,
+     "huber1_va": 0.25414094164259576,
+     "mse_te": 0.36752083089782106,
+     "mae_te": 0.38787372776818513,
+     "huber1_te": 0.1520072842814112
+    }
+   },
+   "ninv_L": {
+    "n_iter": 11,
+    "seconds": 1.7263424000047962,
+    "warnings": [],
+    "F": 811363.1610653382,
+    "metrics": {
+     "J_train": 0.14689323889384906,
+     "mse_va": 0.6546952066354635,
+     "mae_va": 0.5404936381080218,
+     "huber1_va": 0.25414094164266277,
+     "mse_te": 0.36752083089782467,
+     "mae_te": 0.387873727768198,
+     "huber1_te": 0.15200728428141602
+    }
+   },
+   "W_eff_rel": 3.1874074783939644e-11,
+   "bias_max_abs": 3.4313350771864037e-13,
+   "F_rel": 1.4348115296987216e-16,
+   "F_2Lpen_rel": 1.4348115296987216e-16,
+   "d_mse_va": -1.886268918838141e-13,
+   "d_mae_va": -9.869882688917642e-14,
+   "d_mse_te": -3.608224830031759e-15,
+   "d_mae_te": -1.2878587085651816e-14
+  },
+  "mae": {
+   "delta": 1e-06,
+   "tol": 1e-10,
+   "error_direct_2L": "J tăng ở vòng 0: 3.972517e-07 → 4.335719e-07",
+   "diagnosis": {
+    "norm_A0": 728.5245624443396,
+    "eig_min_A0_float64": -4.735786900897024e-13,
+    "eig_min_A0_float32": -9.8932627618135e-05,
+    "norm_A0_float32_minus_float64": 0.00018247218597774634,
+    "penalty_2_lam_delta": 0.00019999999999999998,
+    "J0": 3.96808592383236e-07,
+    "J_float64_gram": [
+     3.958004268934033e-07,
+     3.9497861332039863e-07
+    ],
+    "s_per_iter_float64_gram": 15.337670400000206
+   }
+  }
+ }
+}

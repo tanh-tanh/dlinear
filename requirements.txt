@@ -1,6 +1,14 @@
 # Đã kiểm với Python 3.13.5
+#
+# torch: cài RIÊNG và TRƯỚC, đúng bản CUDA của GPU, rồi mới `pip install -r requirements.txt`.
+# Dòng torch==2.14.0 dưới đây khớp cả bản +cu130 đã cài (PEP 440 bỏ qua nhãn +cu...), nên pip
+# không cài đè bằng bản CPU. Nếu cài torch sau requirements, pip sẽ lấy bản CPU từ PyPI.
+#   RTX 5060 Ti (Blackwell, sm_120) cần CUDA ≥ 12.8. Đã kiểm (30/09/2026, driver 616.92):
+#     pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cu130
+#   GTX 1650 (máy cũ, docs/BAO_CAO_IRLS_DTYPE.md) dùng torch 2.6.0+cu124; bản này không có sm_120.
 numpy==2.3.1
 pandas==2.3.1
-torch==2.6.0
+torch==2.14.0
 scikit-learn==1.9.0
 matplotlib==3.11.0
+scipy==1.18.1   # chỉ cho tests/test_irls.py (linprog, SLSQP); thiếu thì hai test bị bỏ qua

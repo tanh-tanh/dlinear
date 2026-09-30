@@ -17,6 +17,7 @@ Và hai kiểu số khác: float32 thuần (MAE kém ~2e-6 → ngưỡng 1e-4), 
 ~7e-12 so với float64 → ngưỡng 1e-8).
 """
 import unittest
+import warnings
 
 import numpy as np
 import torch
@@ -253,6 +254,157 @@ class TestMAE(unittest.TestCase):
         with self.assertWarns(UserWarning):
             _, n_iter = irls(self.Xt, self.Y, MAE_DELTA, W0, max_iter=3)
         self.assertEqual(n_iter, 3)
+
+
+class TestPatience(unittest.TestCase):
+    """patience: chỉ dừng khi J giảm < tol trong patience vòng liên tiếp."""
+
+    def setUp(self):
+        self.Xt, self.Y = make_data()
+        self.H, self.p = self.Y.shape[1], self.Xt.shape[1]
+        self.W0 = torch.zeros(self.H, self.p, dtype=DT)
+
+    def run_J(self, W0, **kw):
+        """irls, trả (W, số vòng, J cuối do irls tính)."""
+        Js = []
+        W, n = irls(self.Xt, self.Y, MAE_DELTA, W0, callback=lambda it, W, J: Js.append(J.item()), **kw)
+        return W, n, Js[-1]
+
+    def test_patience_one_is_default(self):
+        W_def, n_def = irls(self.Xt, self.Y, MAE_DELTA, self.W0)
+        W_p1, n_p1 = irls(self.Xt, self.Y, MAE_DELTA, self.W0, patience=1)
+        self.assertEqual(n_p1, n_def)
+        self.assertTrue(torch.equal(W_p1, W_def))
+
+    def test_warm_start_does_not_stop_after_one_iteration(self):
+        """Warm từ nghiệm λ = 1 sang λ = 1,1: vòng đầu J giảm < tol nên patience = 1 dừng ngay
+        (đo: 1 vòng), patience = 5 đi tiếp (đo: 5 vòng) và J không lớn hơn."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            W_near, _ = irls(self.Xt, self.Y, MAE_DELTA, self.W0, lam=1.0)
+        _, n1, J1 = self.run_J(W_near, lam=1.1, tol=1e-6, patience=1)
+        _, n5, J5 = self.run_J(W_near, lam=1.1, tol=1e-6, patience=5)
+        self.assertGreater(n5, n1)
+        self.assertLessEqual(J5, J1)
+
+
+class TestDLinearEquivalence(unittest.TestCase):
+    """DLinear + weight decay ≡ Linear với phạt N⁻¹, với mọi hàm mất mát (NHAT_KY mục 1.5).
+
+    Cách 1: giải trực tiếp trong 2L chiều, Z = [X Pᵀ, X (I − P)ᵀ] cộng cột 1, pen = I trên 2L hệ số
+    (irls lấy cỡ pen từ Xt: p − 1 = 2L), ghép W_eff = W_t P + W_s (I − P). Cách 2: L chiều, pen = N⁻¹.
+    Mỗi vòng IRLS là một bài ridge có trọng số, và ridge có trọng số trong 2L chiều với phạt I
+    trùng đại số với L chiều với phạt N⁻¹, nên hai dãy lặp trùng nhau từng vòng. Đo được: Huber
+    W_eff lệch 1e-15, bias 0; MAE F lệch 0, W lệch 2e-15. Phạt có tác dụng thật: nghiệm N⁻¹ khác
+    nghiệm phạt I ~0,11 và khác λ = 0 ~0,3–0,4 (kiểm ở check_penalty_matters).
+    """
+
+    L, K, H, N, LAM = 24, 5, 3, 400, 5.0
+
+    @classmethod
+    def setUpClass(cls):
+        from src.operators import build_N, build_P, dlinear_effective, make_Z
+        g = torch.Generator().manual_seed(3)
+        # chuỗi có tương quan theo thời gian để P có tác dụng thật
+        X = torch.cumsum(torch.randn(cls.N, cls.L, generator=g, dtype=DT), dim=1) / 3
+        W_true = torch.randn(cls.H, cls.L, generator=g, dtype=DT) / cls.L
+        noise = torch.distributions.Laplace(0.0, 0.5).sample((cls.N, cls.H)).to(DT)
+        Y = X @ W_true.T + 0.3 + noise
+        cls.P = build_P(cls.L, cls.K)
+        cls.Ninv = np.linalg.inv(build_N(cls.P))
+        ones = torch.ones(cls.N, 1, dtype=DT)
+        cls.Xt = torch.cat([X, ones], 1)
+        cls.Zt = torch.cat([torch.from_numpy(make_Z(X.numpy(), cls.P)), ones], 1)
+        cls.Y = Y
+        cls.eff = staticmethod(dlinear_effective)
+
+    def solve_both(self, delta):
+        kw = dict(lam=self.LAM, tol=1e-12, patience=5)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")        # MAE có thể chạm max_iter ở tol = 1e-12
+            G, _ = irls(self.Zt, self.Y, delta, torch.zeros(self.H, 2 * self.L + 1, dtype=DT), **kw)
+            W, _ = irls(self.Xt, self.Y, delta, torch.zeros(self.H, self.L + 1, dtype=DT), pen=self.Ninv, **kw)
+        G = G.numpy()
+        W_eff = self.eff(G[:, :self.L], G[:, self.L:2 * self.L], self.P)
+        W1 = np.concatenate([W_eff, G[:, -1:]], axis=1)              # [H, L + 1], bias ở cột cuối
+        return W1, W.numpy(), G
+
+    def F(self, W, delta):
+        """Hàm mục tiêu có phạt, dạng tổng, trong không gian L chiều: Σ ρ_δ(r)/δ + λ Σ_h w_hᵀ N⁻¹ w_h."""
+        R = self.Y.numpy() - self.Xt.numpy() @ W.T
+        a = np.abs(R)
+        q = np.minimum(a, delta)
+        return (q * (a - q / 2)).sum() / delta + self.LAM * np.einsum("hi,ij,hj->", W[:, :-1], self.Ninv, W[:, :-1])
+
+    def check_penalty_matters(self, W2, delta):
+        """Không để test đạt tầm thường: phạt N⁻¹ phải cho nghiệm khác hẳn phạt I."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            WI, _ = irls(self.Xt, self.Y, delta, torch.zeros(self.H, self.L + 1, dtype=DT), lam=self.LAM,
+                         tol=1e-12, patience=5)
+        WI = WI.numpy()
+        self.assertGreater(np.linalg.norm(W2 - WI) / np.linalg.norm(WI), 1e-2)
+
+    def test_huber(self):
+        W1, W2, _ = self.solve_both(1.0)
+        self.check_penalty_matters(W2, 1.0)
+        err = np.linalg.norm(W1[:, :-1] - W2[:, :-1]) / np.linalg.norm(W2[:, :-1])
+        self.assertLess(err, 1e-8, msg=f"W_eff lệch tương đối {err:.2e}")
+        err_b = np.abs(W1[:, -1] - W2[:, -1]).max()
+        self.assertLess(err_b, 1e-8, msg=f"bias lệch {err_b:.2e}")
+
+    def test_mae(self):
+        """Mặt MAE phẳng: so giá trị hàm mục tiêu có phạt, hai chiều (|ΔF|), không so W.
+
+        Thêm: F của cách 1 tính bằng phạt 2L chiều của chính nó (‖W_t‖² + ‖W_s‖²) cũng phải bằng,
+        vì ở nghiệm, (W_t, W_s) là cách tách W_eff có chuẩn nhỏ nhất.
+        """
+        W1, W2, G = self.solve_both(MAE_DELTA)
+        self.check_penalty_matters(W2, MAE_DELTA)
+        F1, F2 = self.F(W1, MAE_DELTA), self.F(W2, MAE_DELTA)
+        gap = (F1 - F2) / F2
+        self.assertLess(abs(gap), 1e-6, msg=f"F (2L chiều) so với F (N⁻¹) lệch tương đối {gap:.2e}")
+        pen_2L = self.LAM * (G[:, :-1] ** 2).sum()
+        pen_L = self.LAM * np.einsum("hi,ij,hj->", W1[:, :-1], self.Ninv, W1[:, :-1])
+        gap_pen = (F1 - pen_L + pen_2L - F2) / F2
+        self.assertLess(abs(gap_pen), 1e-6, msg=f"F với phạt 2L chiều lệch tương đối {gap_pen:.2e}")
+
+
+class TestNLinearMAE(unittest.TestCase):
+    """Câu 11.6: NLinear với MAE = quy hoạch tuyến tính có ràng buộc aᵀw = 1, a = [1, …, 1, 0]."""
+
+    @unittest.skipIf(linprog is None, "cần scipy")
+    def test_matches_constrained_lp(self):
+        Xt, Y = make_data()
+        X = Xt.numpy()
+        n, p = X.shape
+        H = Y.shape[1]
+        a = np.r_[np.ones(p - 1), 0.0]
+        W_lp = []
+        for h in range(H):
+            y = Y[:, h].numpy()
+            res = linprog(
+                c=np.r_[np.zeros(p), np.ones(n)],
+                A_ub=np.block([[X, -np.eye(n)], [-X, -np.eye(n)]]),
+                b_ub=np.r_[y, -y],
+                A_eq=np.r_[a, np.zeros(n)][None, :], b_eq=[1.0],
+                bounds=[(None, None)] * p + [(0, None)] * n,
+                method="highs",
+            )
+            self.assertTrue(res.success, res.message)
+            W_lp.append(res.x[:p])
+        W_lp = torch.tensor(np.array(W_lp), dtype=DT)
+
+        W, _ = irls(Xt, Y, MAE_DELTA, torch.zeros(H, p, dtype=DT), constrained=True, tol=1e-12)
+        mae_irls = (Y - Xt @ W.T).abs().mean(dim=0)
+        mae_lp = (Y - Xt @ W_lp.T).abs().mean(dim=0)
+        gap = ((mae_irls - mae_lp) / mae_lp).max().item()
+        self.assertLess(gap, 1e-6, msg=f"MAE IRLS kém LP tương đối {gap:.2e}")
+        row_sums = W[:, :-1].sum(dim=1)
+        self.assertLess((row_sums - 1).abs().max().item(), 1e-10)
+        # ràng buộc có tác dụng thật: nghiệm khác MAE không ràng buộc
+        W_free, _ = irls(Xt, Y, MAE_DELTA, torch.zeros(H, p, dtype=DT), tol=1e-12)
+        self.assertGreater((W_free[:, :-1].sum(dim=1) - 1).abs().max().item(), 1e-3)
 
 
 if __name__ == "__main__":

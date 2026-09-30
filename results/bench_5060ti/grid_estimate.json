@@ -1,0 +1,300 @@
+{
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "gpu_mem_gib": 15.90179443359375,
+  "compute_capability": "12.0",
+  "torch": "2.14.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 92400,
+  "driver": "616.92",
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.5",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "float32_matmul_precision": "highest"
+ },
+ "date": "2026-09-30 15:40:43",
+ "model": "s/vòng ≈ a + b·n·H, bình phương tối thiểu trên 4 ô góc; ô nào đã đo thì dùng số đo (trung vị vòng 2–3), còn lại dùng nội suy",
+ "fit_cells": [
+  "ETTh1 H=96",
+  "ETTh1 H=720",
+  "ETTm1 H=96",
+  "ETTm1 H=720"
+ ],
+ "a": 0.026627481200160234,
+ "b": 2.7749735724098988e-08,
+ "fit": [
+  {
+   "cell": "ETTh1 H=96",
+   "nH": 5516448,
+   "measured": 0.1613403000010294,
+   "fitted": 0.17970745533589463,
+   "used_in_fit": true,
+   "rel_err": 0.11384108827582473
+  },
+  {
+   "cell": "ETTh1 H=192",
+   "nH": 10903872,
+   "measured": 0.30798465000043507,
+   "fitted": 0.3292070475695629,
+   "used_in_fit": false,
+   "rel_err": 0.06890732239122266
+  },
+  {
+   "cell": "ETTh1 H=336",
+   "nH": 18743088,
+   "measured": 0.5444397000028403,
+   "fitted": 0.5467432198536912,
+   "used_in_fit": false,
+   "rel_err": 0.004230991698142006
+  },
+  {
+   "cell": "ETTh1 H=720",
+   "nH": 38228400,
+   "measured": 1.171893850001652,
+   "fitted": 1.087455478355306,
+   "used_in_fit": true,
+   "rel_err": -0.07205291814290771
+  },
+  {
+   "cell": "ETTh2 H=96",
+   "nH": 5516448,
+   "measured": 0.16139544999896316,
+   "fitted": 0.17970745533589463,
+   "used_in_fit": false,
+   "rel_err": 0.11346048068300019
+  },
+  {
+   "cell": "ETTh2 H=192",
+   "nH": 10903872,
+   "measured": 0.3073292000008223,
+   "fitted": 0.3292070475695629,
+   "used_in_fit": false,
+   "rel_err": 0.0711870123915399
+  },
+  {
+   "cell": "ETTh2 H=336",
+   "nH": 18743088,
+   "measured": 0.5409680500015384,
+   "fitted": 0.5467432198536912,
+   "used_in_fit": false,
+   "rel_err": 0.010675620957903975
+  },
+  {
+   "cell": "ETTh2 H=720",
+   "nH": 38228400,
+   "measured": 1.165126149997377,
+   "fitted": 1.087455478355306,
+   "used_in_fit": false,
+   "rel_err": -0.06666288593921421
+  },
+  {
+   "cell": "ETTm1 H=96",
+   "nH": 22934688,
+   "measured": 0.6080293500017433,
+   "fitted": 0.6630590121148245,
+   "used_in_fit": true,
+   "rel_err": 0.09050494373819862
+  },
+  {
+   "cell": "ETTm1 H=192",
+   "nH": 45740352,
+   "measured": 1.2159179500013124,
+   "fitted": 1.2959101611274229,
+   "used_in_fit": false,
+   "rel_err": 0.06578750739391914
+  },
+  {
+   "cell": "ETTm1 H=336",
+   "nH": 79706928,
+   "measured": 2.1854421999996703,
+   "fitted": 2.238473668579946,
+   "used_in_fit": false,
+   "rel_err": 0.024265784096364484
+  },
+  {
+   "cell": "ETTm1 H=720",
+   "nH": 168865200,
+   "measured": 4.701550599998882,
+   "fitted": 4.712592154197281,
+   "used_in_fit": true,
+   "rel_err": 0.0023484920482195193
+  }
+ ],
+ "iters": {
+  "mae": 107,
+  "huber": 7
+ },
+ "iters_mae_tol1e-9_old_trace": 189,
+ "n_combos": 5,
+ "assumption": "mọi ô cần số vòng như ETTh1 H = 96 (bước full); chưa tính quét λ, nạp dữ liệu và OLS",
+ "rows": [
+  {
+   "cell": "ETTh1 H=96",
+   "n": 57463,
+   "nH": 5516448,
+   "s_per_iter": 0.1613403000010294,
+   "measured": 0.1613403000010294,
+   "fitted": 0.17970745533589463,
+   "hours_mae": 0.02397696125015298,
+   "hours_huber": 0.001568586250010008,
+   "hours_mae_tol1e-9": 0.042351828750270215
+  },
+  {
+   "cell": "ETTh1 H=192",
+   "n": 56791,
+   "nH": 10903872,
+   "s_per_iter": 0.30798465000043507,
+   "measured": 0.30798465000043507,
+   "fitted": 0.3292070475695629,
+   "hours_mae": 0.04576994104173132,
+   "hours_huber": 0.002994295208337563,
+   "hours_mae_tol1e-9": 0.0808459706251142
+  },
+  {
+   "cell": "ETTh1 H=336",
+   "n": 55783,
+   "nH": 18743088,
+   "s_per_iter": 0.5444397000028403,
+   "measured": 0.5444397000028403,
+   "fitted": 0.5467432198536912,
+   "hours_mae": 0.0809097887504221,
+   "hours_huber": 0.005293163750027614,
+   "hours_mae_tol1e-9": 0.14291542125074558
+  },
+  {
+   "cell": "ETTh1 H=720",
+   "n": 53095,
+   "nH": 38228400,
+   "s_per_iter": 1.171893850001652,
+   "measured": 1.171893850001652,
+   "fitted": 1.087455478355306,
+   "hours_mae": 0.17415644715302328,
+   "hours_huber": 0.011393412430571617,
+   "hours_mae_tol1e-9": 0.30762213562543367
+  },
+  {
+   "cell": "ETTh2 H=96",
+   "n": 57463,
+   "nH": 5516448,
+   "s_per_iter": 0.16139544999896316,
+   "measured": 0.16139544999896316,
+   "fitted": 0.17970745533589463,
+   "hours_mae": 0.02398515715262369,
+   "hours_huber": 0.0015691224305454752,
+   "hours_mae_tol1e-9": 0.04236630562472783
+  },
+  {
+   "cell": "ETTh2 H=192",
+   "n": 56791,
+   "nH": 10903872,
+   "s_per_iter": 0.3073292000008223,
+   "measured": 0.3073292000008223,
+   "fitted": 0.3292070475695629,
+   "hours_mae": 0.045672533889011095,
+   "hours_huber": 0.0029879227777857725,
+   "hours_mae_tol1e-9": 0.08067391500021585
+  },
+  {
+   "cell": "ETTh2 H=336",
+   "n": 55783,
+   "nH": 18743088,
+   "s_per_iter": 0.5409680500015384,
+   "measured": 0.5409680500015384,
+   "fitted": 0.5467432198536912,
+   "hours_mae": 0.08039386298633973,
+   "hours_huber": 0.005259411597237178,
+   "hours_mae_tol1e-9": 0.1420041131254038
+  },
+  {
+   "cell": "ETTh2 H=720",
+   "n": 53095,
+   "nH": 38228400,
+   "s_per_iter": 1.165126149997377,
+   "measured": 1.165126149997377,
+   "fitted": 1.087455478355306,
+   "hours_mae": 0.1731506917357213,
+   "hours_huber": 0.011327615347196722,
+   "hours_mae_tol1e-9": 0.30584561437431146
+  },
+  {
+   "cell": "ETTm1 H=96",
+   "n": 238903,
+   "nH": 22934688,
+   "s_per_iter": 0.6080293500017433,
+   "measured": 0.6080293500017433,
+   "fitted": 0.6630590121148245,
+   "hours_mae": 0.09035991729192575,
+   "hours_huber": 0.005911396458350282,
+   "hours_mae_tol1e-9": 0.15960770437545763
+  },
+  {
+   "cell": "ETTm1 H=192",
+   "n": 238231,
+   "nH": 45740352,
+   "s_per_iter": 1.2159179500013124,
+   "measured": 1.2159179500013124,
+   "fitted": 1.2959101611274229,
+   "hours_mae": 0.1806989175696395,
+   "hours_huber": 0.01182142451390165,
+   "hours_mae_tol1e-9": 0.3191784618753445
+  },
+  {
+   "cell": "ETTm1 H=336",
+   "n": 237223,
+   "nH": 79706928,
+   "s_per_iter": 2.1854421999996703,
+   "measured": 2.1854421999996703,
+   "fitted": 2.238473668579946,
+   "hours_mae": 0.3247809936110621,
+   "hours_huber": 0.021247354722219017,
+   "hours_mae_tol1e-9": 0.5736785774999135
+  },
+  {
+   "cell": "ETTm1 H=720",
+   "n": 234535,
+   "nH": 168865200,
+   "s_per_iter": 4.701550599998882,
+   "measured": 4.701550599998882,
+   "fitted": 4.712592154197281,
+   "hours_mae": 0.6987026586109449,
+   "hours_huber": 0.04570951972221135,
+   "hours_mae_tol1e-9": 1.2341570324997064
+  }
+ ],
+ "total_hours": {
+  "hours_mae": 1.9425578710425977,
+  "hours_huber": 0.12708322520839424,
+  "hours_mae_tol1e-9": 3.431247080626645
+ },
+ "hours_by_dataset": {
+  "ETTh1": 0.3460625958342765,
+  "ETTh2": 0.344346317916461,
+  "ETTm1": 1.3792321825002545
+ },
+ "sum_s_per_iter_12_cells": 13.071417450006265,
+ "lambda_sweep": {
+  "mae": {
+   "cold": {
+    "iters": 948,
+    "hours": 10.32641978550495
+   },
+   "warm": {
+    "iters": 469,
+    "hours": 5.108745653377449
+   }
+  },
+  "huber": {
+   "cold": {
+    "iters": 68,
+    "hours": 0.7407136555003551
+   },
+   "warm": {
+    "iters": 44,
+    "hours": 0.4792853065002297
+   }
+  }
+ },
+ "lambda_sweep_assumption": "3 mô hình có λ* × 12 ô, mỗi ô quét cả lưới với số vòng như bước warmstart; gồm cả λ = 0 (trùng lần chạy λ = 0 của grid)"
+}

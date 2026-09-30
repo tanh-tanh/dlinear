@@ -1,0 +1,108 @@
+{
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "gpu_mem_gib": 15.90179443359375,
+  "compute_capability": "12.0",
+  "torch": "2.14.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 92400,
+  "driver": "616.92",
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.5",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "float32_matmul_precision": "highest"
+ },
+ "git_commit": "86c012c82ac5-dirty",
+ "date": "2026-09-30 17:11:01",
+ "cell": "ETTh1 H=96",
+ "model": "Linear",
+ "lam": 0,
+ "loss": "mae",
+ "delta": 1e-06,
+ "tol": 1e-10,
+ "patience": 5,
+ "chunk": 16,
+ "mode": "mixed",
+ "seed": 0,
+ "noise": "Gauss, độ lệch chuẩn mỗi phần tử = 0,1·‖hàng h của W_OLS‖",
+ "runs": {
+  "ols": {
+   "n_iter": 344,
+   "seconds": 116.65179530000023,
+   "warnings": [],
+   "J_final_irls": 3.9239571333455314e-07,
+   "metrics": {
+    "J_train": 3.9239571333455314e-07,
+    "mse_va": 0.6661657203661516,
+    "mae_va": 0.5394639153361459,
+    "huber1_va": 0.25527909701861956,
+    "mse_te": 0.3653367777103918,
+    "mae_te": 0.3833215030225129,
+    "huber1_te": 0.14989089872622902
+   },
+   "init_rel_dist_to_ols": 0.0
+  },
+  "zero": {
+   "n_iter": 357,
+   "seconds": 116.0761960000018,
+   "warnings": [],
+   "J_final_irls": 3.923957133026349e-07,
+   "metrics": {
+    "J_train": 3.923957133026349e-07,
+    "mse_va": 0.6661719966503156,
+    "mae_va": 0.5394648118661082,
+    "huber1_va": 0.255280234824769,
+    "mse_te": 0.365334596930395,
+    "mae_te": 0.3833190775352056,
+    "huber1_te": 0.1498894626575675
+   },
+   "init_rel_dist_to_ols": 1.0
+  },
+  "ols_noise": {
+   "n_iter": 356,
+   "seconds": 60.86774599999626,
+   "warnings": [],
+   "J_final_irls": 3.923957132550828e-07,
+   "metrics": {
+    "J_train": 3.9239571325508287e-07,
+    "mse_va": 0.6661757088990508,
+    "mae_va": 0.5394646910972277,
+    "huber1_va": 0.2552806504735135,
+    "mse_te": 0.3653381426213496,
+    "mae_te": 0.38332004375764295,
+    "huber1_te": 0.1498905497131776
+   },
+   "init_rel_dist_to_ols": 1.8299076276807509
+  }
+ },
+ "pairs": {
+  "ols|zero": {
+   "J_rel": 8.134190072350475e-11,
+   "W_rel": 0.0033268825118826432,
+   "d_mse_va": -6.276284163941881e-06,
+   "d_mae_va": -8.965299622687439e-07,
+   "d_mse_te": 2.180779996807658e-06,
+   "d_mae_te": 2.425487307278207e-06
+  },
+  "ols|ols_noise": {
+   "J_rel": 2.025258420345507e-10,
+   "W_rel": 0.0036605040851414913,
+   "d_mse_va": -9.988532899130043e-06,
+   "d_mae_va": -7.757610818170946e-07,
+   "d_mse_te": -1.3649109578128815e-06,
+   "d_mae_te": 1.4592648699407462e-06
+  },
+  "zero|ols_noise": {
+   "J_rel": 1.211839413011886e-10,
+   "W_rel": 0.0036793354658547725,
+   "d_mse_va": -3.7122487351881617e-06,
+   "d_mae_va": 1.2076888045164935e-07,
+   "d_mse_te": -3.5456909546205395e-06,
+   "d_mae_te": -9.662224373374606e-07
+  }
+ },
+ "max_abs_J_rel": 2.025258420345507e-10,
+ "J_within_1e-8": true
+}

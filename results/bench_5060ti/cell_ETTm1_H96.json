@@ -1,0 +1,89 @@
+{
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "gpu_mem_gib": 15.90179443359375,
+  "compute_capability": "12.0",
+  "torch": "2.14.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 92400,
+  "driver": "616.92",
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.5",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "float32_matmul_precision": "highest"
+ },
+ "date": "2026-09-30 15:34:59",
+ "cell": "ETTm1 H=96",
+ "dataset": "ETTm1",
+ "H": 96,
+ "L": 336,
+ "n": 238903,
+ "p": 337,
+ "nH": 22934688,
+ "tensor_sizes": {
+  "Xt": {
+   "shape": [
+    238903,
+    337
+   ],
+   "mib": 614.2449264526367
+  },
+  "Y": {
+   "shape": [
+    238903,
+    96
+   ],
+   "mib": 174.977783203125
+  },
+  "W0": {
+   "shape": [
+    96,
+    337
+   ],
+   "mib": 0.246826171875
+  }
+ },
+ "load_and_ols_seconds": 1.093409100001736,
+ "loss": "mae",
+ "delta": 1e-06,
+ "mode": "mixed (float64 + gram float32)",
+ "attempts": [
+  {
+   "chunk": 16,
+   "ok": true,
+   "peak_gpu_mb": 6615.208984375
+  }
+ ],
+ "chunk": 16,
+ "status": "warning: IRLS chưa hội tụ sau 3 vòng (delta=1e-06)",
+ "n_iter": 3,
+ "seconds": 1.8887747999979183,
+ "s_per_iter": 0.6295915999993061,
+ "s_per_iter_median": 0.6080293500017433,
+ "per_iter_seconds": [
+  0.6723060000003898,
+  0.6077801999999792,
+  0.6082785000035074
+ ],
+ "peak_gpu_mb": 6615.208984375,
+ "J_final_irls": 3.4613696700212426e-07,
+ "trace": [
+  [
+   0,
+   0.6723060000003898,
+   3.471860620028507e-07
+  ],
+  [
+   1,
+   1.280086200000369,
+   3.465935260400335e-07
+  ],
+  [
+   2,
+   1.8883647000038764,
+   3.4613696700212426e-07
+  ]
+ ]
+}

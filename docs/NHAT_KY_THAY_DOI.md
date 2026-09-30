@@ -159,3 +159,106 @@ Bỏ câu "nhân mọi trọng số với cùng hằng số không đổi nghi�
   - dùng `gram_dtype=torch.float32`;
   - chọn lưới λ riêng cho MAE và Huber theo quy ước ở mục 1.5;
   - chia khối theo H cho ETTm1 và H = 720, vì không vừa 4 GB.
+
+---
+
+# Nhật ký thay đổi code: đo trên RTX 5060 Ti (30/09/2026)
+
+Phạm vi: `NHIEM_VU_5060TI.md`, đo tốc độ, bộ nhớ và warm start của IRLS trên máy mới. Kết quả ở [BAO_CAO_5060TI.md](BAO_CAO_5060TI.md).
+
+Test: đầu phiên 33 test, 1 lỗi nạp (`test_sgd`, xem mục 6.3) → cuối phiên **35, tất cả đạt**.
+
+## Tóm tắt
+
+| File | Loại | Nội dung |
+|---|---|---|
+| `src/solvers.py` | sửa | `irls`: thêm tham số `chunk=8`, chuyển thẳng cho `weight_gram` |
+| `src/sgd.py` | khôi phục | đưa lại `lr_factor` và tham số `lradj` như ở commit d4173f1 |
+| `scripts/bench_5060ti.py` | mới | đo chunk, chạy đầy đủ, từng ô, warm start khi quét λ, ước lượng grid |
+| `results/bench_5060ti/` | mới | `chunk`, `full_{mae,huber}` (+ `.npy`), 12 file `cell_*`, `warmstart_{mae,huber}`, `grid_estimate` |
+| `requirements.txt` | sửa | ghim `torch==2.14.0`, hướng dẫn cài bản CUDA trước; thêm `scipy` |
+| `docs/BAO_CAO_5060TI.md` | mới | báo cáo |
+
+Không đổi: toán của `irls`, `MAE_DELTA`, quy ước λ, các ngưỡng test, `docs/CHECKLIST_CON_LAI.md`.
+
+## 6.1. `irls(..., chunk=8)`
+
+- Chữ ký mới: `irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, tol=1e-9, callback=None, gram_dtype=None, chunk=8)`.
+- Chỉ chuyển xuống `weight_gram(Xg, w, chunk)`. Mặc định 8 giữ hành vi cũ.
+- Trên RTX 5060 Ti nên dùng `chunk=16` (báo cáo mục 3.1).
+
+## 6.2. `scripts/bench_5060ti.py`
+
+- **Các bước:** `--step chunk | full | ettm1 | cell --data D --H H | warmstart [--loss mae|huber]`, và `--summary`. `--chunk` ghi đè chunk; mặc định đọc `best_chunk` từ `chunk.json`.
+- **Chế độ và thiết lập:**
+  - Luôn chạy chế độ pha.
+  - Tắt TF32 ngay lúc import.
+  - Mọi JSON có khối `hardware`: GPU, torch, CUDA, cuDNN, driver, OS, trạng thái TF32.
+- **Chọn chunk:** lấy chunk nhỏ nhất có thời gian một vòng trong khoảng 2% so với nhanh nhất. Chênh lệch giữa các chunk cỡ nhiễu đo, còn bộ nhớ tăng tuyến tính theo chunk.
+- **`full`:** so MSE/MAE test với `results/irls_dtype/*_mixed.json` ở cùng số vòng, ghi `pass_1e-6`.
+- **`cell`:** tự giảm chunk một nửa khi OOM.
+- **`warmstart`:**
+  - Khởi tạo lạnh bằng `fit_with_bias(ridge_pen(2δλ·N⁻¹))`, theo mục 1.5. Với MAE, cách này thực chất là OLS.
+  - Tự mở rộng lưới tối đa 2 giá trị nếu λ* ở đầu mút trên.
+- **`--summary`:** ghi `grid_estimate.json`, gồm nội suy s/vòng ≈ a + b·n·H trên 4 ô góc, và chi phí quét λ.
+
+## 6.3. `src/sgd.py`: khôi phục `lr_factor`
+
+- **Lỗi:** commit 86c012c ("add irls") đã thay `lr_factor` và `lradj` bằng `StepLR`, nhưng `tests/test_sgd.py` (từ d4173f1) vẫn import `lr_factor`. Test này không nạp được, trên cả venv CPU cũ.
+- **Sửa:** theo yêu cầu người dùng, lấy lại `src/sgd.py` của d4173f1 (`git checkout 86c012c~1 -- src/sgd.py`).
+- **Hệ quả:** `train_sgd` lại mặc định `lradj="type1"`, đúng lịch lr của LTSF-Linear. Lịch cũ của notebook là `lradj="step"`.
+
+## 6.4. Môi trường
+
+- **Venv mới `.venv-gpu`:** torch 2.14.0+cu130, có sm_120. Không commit, vì venv tự sinh `.gitignore`.
+- **`requirements.txt`:** thêm ghi chú phải cài torch từ index CUDA trước. `torch==2.14.0` khớp bản `+cu130` (PEP 440 bỏ qua nhãn local), nên `pip install -r` không cài đè bằng bản CPU; đã kiểm bằng `--dry-run`.
+
+---
+
+# Nhật ký thay đổi code: nhiệm vụ 2, tiêu chí dừng, ba phép kiểm, `runner.py` (30/09/2026)
+
+Phạm vi: `docs/NHIEM_VU_2.md`. Kết quả ở [BAO_CAO_TIEU_CHI_DUNG.md](BAO_CAO_TIEU_CHI_DUNG.md).
+
+## 7.1. `irls(..., patience=1)`
+
+- **Chữ ký mới:** thêm `patience=1` vào cuối (sau `chunk`).
+- **Cách dừng:** chỉ dừng khi J giảm tương đối ít hơn `tol` trong `patience` vòng liên tiếp. Một vòng giảm ≥ `tol` đặt lại bộ đếm về 0.
+- **Lý do:** khi warm start từ nghiệm của λ liền trước, vòng đầu J giảm rất ít dù chưa hội tụ. Với `patience = 1`, MAE dừng ngay sau 1 vòng ở λ = 1, 3, 10 (BAO_CAO_5060TI mục 5).
+- **J tăng trong ngưỡng `rise_tol`** (chạm độ chính xác của kiểu số): vẫn dừng ngay, không chờ `patience`. Trước đây nhánh này rơi vào phép so `< tol` vì mức giảm âm; giờ tách thành phép kiểm `J_new > J_old` riêng.
+- **Mặc định `patience = 1`** cho đúng hành vi cũ, kể cả W và số vòng (test `test_patience_one_is_default` so bằng `torch.equal`).
+- Với `tol = 0`, `irls` chạy đến `max_iter`, trừ khi J tăng trong ngưỡng. Dùng cho nghiệm tham chiếu.
+
+Test mới trong `tests/test_irls.py`, lớp `TestPatience`:
+
+| Test | Kiểm gì | Đo được |
+|---|---|---|
+| `test_patience_one_is_default` | `patience=1` cho cùng W và cùng số vòng như khi không truyền | trùng từng bit |
+| `test_warm_start_does_not_stop_after_one_iteration` | MAE, warm từ nghiệm λ = 1 sang λ = 1,1, `tol = 1e-6`: `patience = 5` chạy nhiều vòng hơn `patience = 1` và J không lớn hơn | 1 vòng → 5 vòng |
+
+## 7.2. Test mới cho Phần B (`tests/test_irls.py`)
+
+| Lớp / test | Kiểm gì | Đo được → ngưỡng |
+|---|---|---|
+| `TestDLinearEquivalence.test_huber` | DLinear giải trực tiếp trong 2L chiều (Z = [X Pᵀ, X (I − P)ᵀ] + cột 1, `pen = I` cỡ 2L) cho W_eff và bias như L chiều với `pen = N⁻¹`; L = 24, k = 5, n = 400, λ = 5 | W_eff 1e-15, bias 0 → 1e-8 |
+| `TestDLinearEquivalence.test_mae` | như trên với MAE: hàm mục tiêu có phạt (L chiều) của hai nghiệm, so hai chiều; và với phạt 2L chiều của chính nghiệm 2L | 0 → 1e-6 |
+| `TestNLinearMAE.test_matches_constrained_lp` | NLinear MAE (`constrained=True`) so với `linprog` có `A_eq`: MAE không kém quá 1e-6 tương đối, tổng hàng = 1 tới 1e-10, và nghiệm khác MAE không ràng buộc | đạt |
+
+- Hai dãy lặp IRLS (2L chiều và N⁻¹) trùng nhau từng vòng trong số học chính xác, vì mỗi vòng là một bài ridge có trọng số. Vì vậy test này kiểm phép tương đương và cách cài `pen`, không kiểm hội tụ.
+- Để test không đạt tầm thường, `check_penalty_matters` đòi nghiệm phạt N⁻¹ khác nghiệm phạt I hơn 1e-2 tương đối (đo được khoảng 0,11).
+- Test: 37 → **40, tất cả đạt**.
+
+## 7.3. Script mới
+
+| File | Nội dung |
+|---|---|
+| `scripts/stopping_check.py` | A.2 (nghiệm tham chiếu, `tol = 0`), A.3 (quét λ lạnh/warm theo `tol`, `patience`), A.4 (ba tiêu chí → `acceptance.json`). Bỏ qua file đã có, `--force` để chạy lại |
+| `scripts/checks_mae.py` | B.1 (ba điểm khởi tạo), B.2 (2L chiều so với N⁻¹ trên dữ liệu thật; nếu 2L lỗi thì ghi chẩn đoán trị riêng của A_0 và vài vòng với A_h float64) |
+| `scripts/runner.py` | **soạn, chưa chạy**: đường λ của cả grid → `results/lambda_path.csv` và `results/weights/`; `STOP` để trống chờ quyết định Phần A |
+| `scripts/select_lambda.py` | **soạn, chưa chạy**: `lambda_path.csv` → `results/results.csv` (hai cách chọn λ*) |
+| `scripts/bench_5060ti.py` | thêm `git_commit()` và `save_json()`, ghi `git_commit` vào mọi JSON; `run_irls` nhận `patience`, `constrained`, `quiet`; thêm cột `converged` |
+| `.gitignore` | thêm `results/weights/` (W của cả grid khoảng 1,9 GB) |
+
+## 7.4. Còn để ngỏ
+
+- **Phần A không đạt A.4**: chỉ trượt ở MSE val tại λ = 0, lệch 1,04e-5–1,1e-5 ở `tol = 1e-10`. Chờ người dùng chọn phương án (BAO_CAO_TIEU_CHI_DUNG mục 1), rồi điền `STOP` trong `runner.py`.
+- **B.2 với MAE trên dữ liệu thật**: cách giải 2L chiều lỗi `J tăng` ở chế độ pha (A_h suy biến, sai số float32 cỡ phạt 2λδ). Chưa chạy bản float64 vì mất khoảng 75 phút.
