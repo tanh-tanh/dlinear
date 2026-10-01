@@ -332,6 +332,41 @@ Cấu hình:
 - **Log của chuỗi chạy nền bị mất** khi phiên Claude Code khởi động lại. Mọi số trong báo cáo lấy từ các file JSON, không từ log.
 - Hai phép kiểm B.1 và B.2 trên dữ liệu thật được chạy lại ở tiền cảnh sau đó.
 
+## 8. Sự cố khi chạy grid: J tăng ở ETTh2 H = 720
+
+**Lỗi.** Runner dừng ở ETTh2 H = 720, Linear MAE λ = 0 (khởi tạo từ nghiệm MSE):
+
+```
+RuntimeError: J tăng ở vòng 16: 5,075604e-07 → 5,077229e-07
+```
+
+J tăng 3,2e-4 tương đối, lớn hơn nhiều so với nhiễu làm tròn. Đến lúc đó đã xong 66/72 đường λ của ETTh1 và ETTh2.
+
+**Chẩn đoán** (tái hiện đúng vòng 16, chế độ pha, chunk 16; tính tại W của vòng 15):
+
+| | giá trị |
+|---|---|
+| Trọng số δ/max(\|r\|, δ) nhỏ hơn 1e-3 | 99,4% |
+| κ(A_h) min / trung vị / max | 4,9e4 / 2,8e5 / **8,3e7** (h = 3) |
+| ‖A_h,float32 − A_h,float64‖ lớn nhất | 27 |
+| Số A_h float32 không xác định dương | 2 / 720 |
+| Số bước h làm J_h tăng (A_h float32) | **1 / 720** (h = 3, J_3 tăng 75%) |
+| Bước với A_h float64 | J giảm 1,05e-4, không h nào tăng |
+| Thời gian lập cả 720 A_h | float32 0,99 s, float64 26,6 s |
+
+- Với κ·ε₃₂ ≈ 8,3e7 × 6e-8 ≈ 5 > 1, float32 không còn đủ chính xác cho A_3. Đây đúng là giới hạn κ(A_h)·ε₃₂ ≪ 1 ghi trong docstring của `irls`.
+- Các ô khác ổn vì κ(A_h) nhỏ hơn. Ví dụ ETTh1 H = 96 có κ ≤ 1,7e6 (BAO_CAO_IRLS_DTYPE).
+
+**Sửa** (người dùng chọn): `irls(..., gram_fallback=True)`, mặc định bật, chỉ có tác dụng ở chế độ pha.
+
+- Sau mỗi bước, tính J_h theo từng h. Bước h nào có J_h tăng quá `rise_tol` thì lập lại A_h đó bằng float64 và giải lại.
+- J tách theo h, nên các h khác giữ nguyên, và toán của IRLS không đổi.
+- Chi phí cho mỗi h hỏng khoảng 0,04 s ở ETTh2 H = 720.
+- Khi không có bước h nào hỏng, kết quả trùng từng bit với trước khi sửa.
+- Test `TestGramFallback` (2 test): 43 test, tất cả đạt.
+
+**Chưa kiểm:** các dòng đã chạy trước khi sửa (ETTh1, và ETTh2 H ≤ 336) không báo lỗi. Nhưng có thể đã có bước h đi sai rồi tự hồi phục mà không báo, vì tổng J vẫn giảm.
+
 ## Tái lập
 
 ```bash
