@@ -367,6 +367,36 @@ J tăng 3,2e-4 tương đối, lớn hơn nhiều so với nhiễu làm tròn. �
 
 **Chưa kiểm:** các dòng đã chạy trước khi sửa (ETTh1, và ETTh2 H ≤ 336) không báo lỗi. Nhưng có thể đã có bước h đi sai rồi tự hồi phục mà không báo, vì tổng J vẫn giảm.
 
+### 8.1. Vì sao NLinear cần fallback nhiều như vậy (ETTh2 H = 720)
+
+**Hiện tượng.** Khi chạy grid ETTh2 H = 720 MAE:
+
+- Linear và DLinear chỉ lập lại 7–50 bước h mỗi λ.
+- NLinear lập lại 2 281 tới 26 713 bước h mỗi λ. Ở λ = 1000 là khoảng 200 trong 720 bước h mỗi vòng, nên lần chạy mất 19 phút thay vì khoảng 2,5 phút.
+
+**Chẩn đoán** (warm từ W của λ = 300, NLinear λ = 1000; script tạm, số in ra ở phiên làm việc):
+
+- **Các bước h hỏng là thật.**
+  - Bước float64 không làm J_h tăng ở h nào.
+  - Các h hỏng có κ(A_h) khoảng 6–7e7, còn h tốt khoảng 1e6.
+  - Số h hỏng tăng theo vòng (0, 0, 55, 203), vì κ xấu dần khi nghiệm tiến gần nghiệm MAE.
+- **Không phải do phép chiếu ràng buộc.** Bước float32 lệch bước float64 khoảng 8% cả khi có lẫn khi không có ràng buộc.
+- **Nguyên nhân là dữ liệu: ETTh2 có các đoạn hằng dài trong tập train.**
+  - Ba kênh có đoạn hằng: kênh 2 dài tới 1 025 giờ, kênh 4 tới 378 giờ, kênh 5 tới 503 giờ. Có thể cảm biến bị kẹt.
+  - Với L = 336, H = 720, có 1 033 trong 53 095 cửa sổ có đầu vào hằng (1,95%).
+  - ETTh1 và ETTm1 không có cửa sổ hằng dài 336 nào: đoạn hằng dài nhất là 73 giờ (ETTh1) và 293 điểm 15 phút (ETTm1).
+- **Vì sao riêng NLinear bị nặng.** Các hàng W_eff của NLinear cộng bằng 1, nên mọi cửa sổ hằng x = c·1 có dự báo c + b_h.
+  - Nếu các bước đích cũng hằng (bằng c), mọi cửa sổ này có cùng phần dư −b_h. Nghiệm MAE đặt b_h ≈ 0 (đo được 1,7e-7), nên 99,4% cửa sổ hằng nằm đúng trên mặt khớp và nhận trọng số 1, trong khi các điểm khác nhận khoảng 1e-6.
+  - A_h vì vậy bị một khối gần hạng 1 theo hướng 11ᵀ áp đảo.
+  - Ở các h hỏng, 69% điểm gần nội suy là cửa sổ hằng; ở h tốt chỉ 2%.
+  - Linear không có ràng buộc tổng hàng nên chỉ 54% cửa sổ hằng rơi vào trạng thái này, và chỉ 6/180 h (lấy mẫu mỗi 4 h) có κ > 3e7, so với 81/180 h của NLinear.
+
+**Hệ quả:**
+
+- **Kết quả vẫn đúng.** Mọi bước h hỏng đều đã được giải lại bằng float64 và J giảm đều; chỉ tốn thêm thời gian.
+- **ETTm1 không nên bị chậm như vậy**, vì không có cửa sổ hằng.
+- **Về nghiên cứu (chưa xử lý, để người dùng quyết định):** các đoạn hằng của ETTh2 giống lỗi cảm biến. Chúng kéo nghiệm MAE của NLinear về chỗ khớp đúng chúng (b_h ≈ 0), và có thể làm lệch so sánh NLinear với Linear trên ETTh2. Có thể cân nhắc ghi chú điều này khi báo cáo kết quả ETTh2.
+
 ## Tái lập
 
 ```bash
