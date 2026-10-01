@@ -177,9 +177,13 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
         J = huber_objective(R, delta) + WPW.sum() / (2 * Y.numel())
         if not per_h:
             return J
-        a_ = R.abs()
-        q = a_.clamp(max=delta)
-        return J, ((q * (a_ - q / 2)).sum(0) + WPW.sum(-1) / 2) / Y.numel()
+        # theo khối cột để không tạo thêm tensor tạm cỡ n·H (ETTm1 H = 720: mỗi cái ~1,3 GB, tràn VRAM)
+        rho = torch.empty(R.shape[1], dtype=R.dtype, device=R.device)
+        for c in range(0, R.shape[1], 64):
+            a_ = R[:, c:c + 64].abs()
+            q = a_.clamp(max=delta)
+            rho[c:c + 64] = (q * (a_ - q / 2)).sum(0)
+        return J, (rho + WPW.sum(-1) / 2) / Y.numel()
 
     # Fallback theo h (chỉ ở chế độ pha): nếu A_h lập bằng gram_dtype quá xấu điều kiện (κ(A_h)·ε ≳ 1),
     # bước h đó đi sai và J_h tăng. Vì J tách theo h, lập lại riêng các A_h đó bằng kiểu của Xt rồi

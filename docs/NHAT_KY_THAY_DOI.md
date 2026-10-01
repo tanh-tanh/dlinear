@@ -298,3 +298,8 @@ Test mới trong `tests/test_irls.py`, lớp `TestPatience`:
 - **Sửa:** fallback dùng `fb_chunk = chunk · (cỡ kiểu gram)/(cỡ kiểu Xt)`, tức 8 với float32/float64. Tensor trung gian của fallback vì vậy không lớn hơn của bước thường. Toán không đổi.
 - **Đo trên ETTm1 H = 720:** bước float32 chunk 16 thêm 5,95 GiB; fallback float64 chunk 8 (40 bước h) thêm 4,75 GiB. Test 43/43 đạt.
 - Đã dừng runner (mất phần đang chạy dở của Linear MAE λ = 0) và chạy tiếp.
+- **Sau khi sửa vẫn tràn 1,36 GB.** Lần chạy lại vẫn dùng 14,4 GB VRAM cộng 1,36 GB bộ nhớ dùng chung, ngay từ lần chạy đầu. Hai nguyên nhân thêm:
+  1. Phép tính J_h theo h của fallback tạo thêm 3–4 tensor tạm cỡ n·H float64, mỗi cái khoảng 1,3 GB. Sửa: `objective(per_h=True)` tính theo khối 64 cột. J vẫn tính như cũ, nên test trùng từng bit vẫn đạt.
+  2. Phân mảnh bộ nhớ: cấp phát thật 11,6 GiB nhưng PyTorch dự trữ tới 15,2 GiB. Sửa trong `runner.py`:
+     - đặt `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` trước khi import torch;
+     - dùng `chunk = 8` cho ô có n·H > 1e8 (chỉ ETTm1 H = 720). Đo trên ETTm1 H = 720: dự trữ 14,05 GiB, 5,0 s/vòng (chunk 16: 4,8 s/vòng). Cột `chunk` của CSV ghi đúng giá trị đã dùng.

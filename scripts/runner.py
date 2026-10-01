@@ -27,7 +27,12 @@ import argparse
 import csv
 import datetime
 import json
+import os
 import sys
+
+# Chống phân mảnh bộ nhớ CUDA: ở ETTm1 H = 720, cấp phát thật ~11,6 GiB nhưng dự trữ tới 15,2 GiB, cộng
+# màn hình là tràn VRAM sang RAM hệ thống (chạy chậm hẳn). Phải đặt trước khi import torch.
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 import time
 import warnings
 from pathlib import Path
@@ -118,6 +123,8 @@ class Cell:
         self.ds, self.H = ds, H
         self.d = load_cell(ds, H)
         self.n = len(self.d["X"])
+        # ô lớn (chỉ ETTm1 H = 720): chunk nhỏ hơn để khối einsum ~2,4 GB thay vì ~4,7 GB, tránh tràn VRAM
+        self.chunk = CHUNK if self.n * H <= 1e8 else CHUNK // 2
         P = build_P(L, K)
         self.Ninv = np.linalg.inv(build_N(P))
         self.pens = {"Linear": np.eye(L), "DLinear": self.Ninv, "NLinear": np.diag(np.r_[np.ones(L - 1), 0.0])}
@@ -139,7 +146,7 @@ class Cell:
     def gpu(self):
         if self._gpu is None:
             Xg, Yg = B.to_gpu(self.d["Xt"], self.d["Y"])
-            B.warmup(Xg, Yg, torch.zeros(self.H, L + 1, dtype=torch.float64, device=B.DEV), CHUNK)
+            B.warmup(Xg, Yg, torch.zeros(self.H, L + 1, dtype=torch.float64, device=B.DEV), self.chunk)
             self._gpu = (Xg, Yg)
         return self._gpu
 
@@ -191,7 +198,8 @@ class Cell:
             warnings.simplefilter("always")
             W, n = irls(Xg, Yg, delta, torch.as_tensor(W0, device=B.DEV), lam=lam_irls,
                         pen=self.pens[model] if lam_irls else None, constrained=(model == "NLinear"),
-                        max_iter=max_iter, tol=tol, patience=patience, gram_dtype=torch.float32, chunk=CHUNK)
+                        max_iter=max_iter, tol=tol, patience=patience, gram_dtype=torch.float32,
+                        chunk=self.chunk)
         return W.cpu().numpy(), n, not caught, B.sync_time() - t0
 
 
@@ -282,7 +290,7 @@ def run_irls_path(cell, model, obj, done, writer):
         t = STOP[obj]["tol_lam0"] if lam == 0 else tol
         W, n, conv, sec = cell.run_irls(model, W0, delta, lam, t, patience)
         row = base_row(cell, model, obj, lam)
-        row.update(init=init, n_iter=n, converged=conv, seconds=sec, tol=t, patience=patience,
+        row.update(init=init, n_iter=n, converged=conv, seconds=sec, tol=t, patience=patience, chunk=cell.chunk,
                    gram_dtype="float32", **cell.evaluate(W, model, obj, lam))
         writer.write(row, W)
         done[key] = row
