@@ -114,7 +114,7 @@ def huber_objective(R, delta):
 
 
 def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, tol=1e-9,
-         callback=None, gram_dtype=None, chunk=8, patience=1):
+         callback=None, gram_dtype=None, chunk=8, patience=1, gram_fallback=True):
     """Cực tiểu Huber(δ) có phạt ridge bằng IRLS; δ = MAE_DELTA cho MAE, δ rất lớn cho MSE.
 
     Hàm mục tiêu, dạng tổng như quy ước MSE ‖Y − XWᵀ‖² + λ‖W‖²:
@@ -139,6 +139,10 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
         patience  chỉ dừng khi J giảm tương đối ít hơn tol trong patience vòng liên tiếp; một vòng
              giảm ≥ tol đặt lại bộ đếm. Cần khi warm start: vòng đầu giảm rất ít dù chưa hội tụ
              (docs/BAO_CAO_TIEU_CHI_DUNG.md). J tăng trong ngưỡng rise_tol vẫn dừng ngay.
+        gram_fallback  chỉ có tác dụng khi gram_dtype khác kiểu của Xt: bước h nào làm J_h tăng
+             (A_h lập bằng gram_dtype quá xấu điều kiện) thì lập lại A_h đó bằng kiểu của Xt và giải
+             lại. Không bao giờ chạy khi các bước đều tốt, nên không đổi kết quả trong trường hợp đó.
+             Số bước h đã lập lại ghi ở irls.last_fallbacks.
 
     Trả (W [H, p], số vòng đã chạy). Báo RuntimeError nếu J tăng quá mức nhiễu làm tròn
     (IRLS là thuật toán MM nên J không được tăng; tăng nghĩa là code sai, hoặc hệ A_h quá xấu
@@ -166,10 +170,25 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
                          else torch.as_tensor(pen, dtype=Xt.dtype, device=Xt.device))
         Pen *= 2 * lam * delta
 
-    def objective(W):
-        return huber_objective(Y - Xt @ W.T, delta) + ((W @ Pen) * W).sum() / (2 * Y.numel())
+    def objective(W, per_h=False):
+        """J (như trước, không đổi cách tính); per_h=True trả thêm J_h [H], Σ_h J_h = J (tới làm tròn)."""
+        R = Y - Xt @ W.T
+        WPW = (W @ Pen) * W
+        J = huber_objective(R, delta) + WPW.sum() / (2 * Y.numel())
+        if not per_h:
+            return J
+        a_ = R.abs()
+        q = a_.clamp(max=delta)
+        return J, ((q * (a_ - q / 2)).sum(0) + WPW.sum(-1) / 2) / Y.numel()
 
-    J_old = objective(W)
+    # Fallback theo h (chỉ ở chế độ pha): nếu A_h lập bằng gram_dtype quá xấu điều kiện (κ(A_h)·ε ≳ 1),
+    # bước h đó đi sai và J_h tăng. Vì J tách theo h, lập lại riêng các A_h đó bằng kiểu của Xt rồi
+    # giải lại; các h khác giữ nguyên. Toán của IRLS không đổi (docs/BAO_CAO_TIEU_CHI_DUNG.md mục 8).
+    fallback = gram_fallback and Xg.dtype != Xt.dtype
+    if fallback:
+        J_old, Jh_old = objective(W, per_h=True)
+    else:
+        J_old = objective(W)
     stall = 0                                       # số vòng liên tiếp J giảm < tol
     # J tính bằng kiểu của Xt nên lệch vài ε do làm tròn; float32 (ε ≈ 1,2e-7) cần ngưỡng rộng hơn.
     # J tăng trong ngưỡng này coi là đã chạm độ chính xác của kiểu số và dừng (bước dừng bên dưới).
@@ -179,6 +198,17 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
         a = torch.ones(p, dtype=Xt.dtype, device=Xt.device)
         a[-1] = 0                                   # không ràng buộc bias
 
+    def step(A, g, W):
+        """W + A⁻¹g cho từng hàng; với NLinear thì chiếu lên ràng buộc aᵀw = 1."""
+        if constrained:
+            B = torch.stack([g, a.expand(len(W), -1)], dim=-1)     # [h, p, 2]
+            sol = torch.linalg.solve(A, B)
+            w_hat, u = W + sol[..., 0], sol[..., 1]
+            coef = ((w_hat * a).sum(-1, keepdim=True) - 1) / (u * a).sum(-1, keepdim=True)
+            return w_hat - coef * u
+        return W + torch.linalg.solve(A, g.unsqueeze(-1)).squeeze(-1)
+
+    n_fallback = 0
     for it in range(max_iter):
         # 1–2. phần dư và trọng số từ W hiện tại
         R = Y - Xt @ W.T
@@ -189,17 +219,22 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
         g = (w * R).T @ Xt - W @ Pen
 
         # 4. giải (và hiệu chỉnh theo ràng buộc nếu là NLinear)
-        if constrained:
-            B = torch.stack([g, a.expand(H, -1)], dim=-1)          # [H, p, 2]
-            sol = torch.linalg.solve(A, B)
-            w_hat, u = W + sol[..., 0], sol[..., 1]
-            coef = ((w_hat * a).sum(-1, keepdim=True) - 1) / (u * a).sum(-1, keepdim=True)
-            W = w_hat - coef * u
-        else:
-            W = W + torch.linalg.solve(A, g.unsqueeze(-1)).squeeze(-1)
+        W_prev = W
+        W = step(A, g, W)
 
         # 5. kiểm J không tăng, kiểm dừng
-        J_new = objective(W)
+        if fallback:
+            J_new, Jh_new = objective(W, per_h=True)
+            bad = torch.nonzero(Jh_new > Jh_old * (1 + rise_tol)).flatten()
+            if len(bad):
+                A_bad = weight_gram(Xt, w[:, bad], chunk) + Pen
+                W = W.clone()
+                W[bad] = step(A_bad, g[bad], W_prev[bad])
+                J_new, Jh_new = objective(W, per_h=True)
+                n_fallback += len(bad)
+            Jh_old = Jh_new
+        else:
+            J_new = objective(W)
         if callback is not None:
             callback(it, W, J_new)
         if J_new > J_old * (1 + rise_tol):
@@ -213,4 +248,5 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
     else:
         warnings.warn(f"IRLS chưa hội tụ sau {max_iter} vòng (delta={delta})")
 
+    irls.last_fallbacks = n_fallback
     return W, it + 1

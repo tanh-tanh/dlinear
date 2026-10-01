@@ -287,7 +287,8 @@ def run_irls_path(cell, model, obj, done, writer):
         writer.write(row, W)
         done[key] = row
         print(f"  {cell.ds} H={cell.H} {model} {obj} λ = {lam:g}: {n} vòng, {sec:.1f} s, "
-              f"val MSE {row['val_mse']:.6f} MAE {row['val_mae']:.6f}", flush=True)
+              f"val MSE {row['val_mse']:.6f} MAE {row['val_mae']:.6f}"
+              + (f", fallback float64 {irls.last_fallbacks} bước h" if irls.last_fallbacks else ""), flush=True)
 
     for lam in IRLS_LAMS:
         one(lam)

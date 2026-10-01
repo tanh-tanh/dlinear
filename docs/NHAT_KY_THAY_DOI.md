@@ -272,3 +272,20 @@ Test mới trong `tests/test_irls.py`, lớp `TestPatience`:
 
 - ~~**Phần A không đạt A.4**~~ **Đã xử lý** bằng phương án (a′), mục 7.4.: chỉ trượt ở MSE val tại λ = 0, lệch 1,04e-5–1,1e-5 ở `tol = 1e-10`. Chờ người dùng chọn phương án (BAO_CAO_TIEU_CHI_DUNG mục 1), rồi điền `STOP` trong `runner.py`.
 - ~~**B.2 với MAE trên dữ liệu thật**~~ **Đã xử lý** bằng phép so float64 ở cùng số vòng (`dlinear_f64`), mục 7.4.: cách giải 2L chiều lỗi `J tăng` ở chế độ pha (A_h suy biến, sai số float32 cỡ phạt 2λδ). Chưa chạy bản float64 vì mất khoảng 75 phút.
+
+## 7.6. `irls(..., gram_fallback=True)`: fallback float64 theo từng h
+
+- **Lỗi:** khi chạy grid, ETTh2 H = 720, Linear MAE λ = 0 báo `RuntimeError: J tăng ở vòng 16: 5,075604e-07 → 5,077229e-07`.
+- **Chẩn đoán** (BAO_CAO_TIEU_CHI_DUNG mục 8):
+  - Chỉ 1 trong 720 bước h hỏng: h = 3. Ở đó κ(A_3) = 8,3e7, nên κ·ε₃₂ ≈ 5.
+  - A_3 lập bằng float32 không còn xác định dương, J_3 tăng 75%. Lập bằng float64 thì J giảm bình thường.
+- **Sửa:** chỉ ở chế độ pha (`gram_dtype` khác kiểu của Xt). Sau mỗi bước, tính J_h theo từng h. Bước h nào có J_h tăng quá `rise_tol` thì lập lại A_h đó bằng kiểu của Xt (float64) và giải lại.
+  - J tách theo h, nên các h khác giữ nguyên. Toán của IRLS không đổi.
+  - Chi phí: khoảng 0,04 s cho mỗi h hỏng ở ETTh2 H = 720, so với 26,6 s nếu lập cả 720 A_h bằng float64.
+- **Mặc định bật.** Khi không có bước h nào hỏng, kết quả trùng từng bit với `gram_fallback=False`, vì J tính theo đúng công thức cũ.
+- **`irls.last_fallbacks`** ghi số bước h đã lập lại trong lần gọi gần nhất. `runner.py` in số này ra log, nhưng không thêm cột vào CSV để giữ header cũ.
+- **Test mới (`TestGramFallback`):**
+  - Hai cột gần cộng tuyến: không fallback thì báo J tăng ở vòng 48; có fallback thì MAE khớp float64 tới khoảng 3e-13.
+  - Dữ liệu điều kiện tốt: kết quả trùng từng bit.
+  - Test: 41 → **43, tất cả đạt**.
+- **Lưu ý:** các dòng grid đã chạy trước khi sửa không bị lỗi, nhưng có thể đã có bước h đi sai rồi tự hồi phục mà không báo, vì tổng J vẫn giảm. Chưa kiểm.

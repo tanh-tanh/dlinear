@@ -308,6 +308,49 @@ class TestPatience(unittest.TestCase):
         self.assertLessEqual(J5, J1)
 
 
+class TestGramFallback(unittest.TestCase):
+    """Chế độ pha: bước h nào làm J_h tăng (A_h float32 quá xấu điều kiện) thì lập lại A_h bằng float64.
+
+    Trên ETTh2 H = 720 MAE, κ(A_3) = 8,3e7 làm bước h = 3 đi sai (BAO_CAO_TIEU_CHI_DUNG mục 8).
+    Ở đây tái hiện bằng hai cột gần cộng tuyến. Đo được: không fallback → J tăng ở vòng 48; có
+    fallback → 30 bước h lập lại, MAE khớp float64 tới ~3e-13.
+    """
+
+    def ill_data(self):
+        g = torch.Generator().manual_seed(0)
+        n, L, H = 300, 6, 3
+        X = torch.randn(n, L, generator=g, dtype=DT)
+        X[:, 1] = X[:, 0] + X[:, 1] / 100                   # hai cột gần cộng tuyến
+        W_true = torch.randn(H, L, generator=g, dtype=DT)
+        torch.manual_seed(0)
+        Y = X @ W_true.T + 0.5 + torch.distributions.Laplace(0.0, 1.0).sample((n, H)).to(DT)
+        return torch.cat([X, torch.ones(n, 1, dtype=DT)], 1), Y
+
+    def test_fallback_fixes_ill_conditioned_step(self):
+        Xt, Y = self.ill_data()
+        W0 = torch.zeros(Y.shape[1], Xt.shape[1], dtype=DT)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with self.assertRaises(RuntimeError):
+                irls(Xt, Y, MAE_DELTA, W0, tol=1e-12, gram_dtype=torch.float32, gram_fallback=False)
+            W, _ = irls(Xt, Y, MAE_DELTA, W0, tol=1e-12, gram_dtype=torch.float32)
+            self.assertGreater(irls.last_fallbacks, 0)
+            W64, _ = irls(Xt, Y, MAE_DELTA, W0, tol=1e-12)
+        mae, mae64 = (Y - Xt @ W.T).abs().mean(), (Y - Xt @ W64.T).abs().mean()
+        gap = ((mae - mae64) / mae64).item()
+        self.assertLess(abs(gap), 1e-8, msg=f"MAE có fallback lệch float64 tương đối {gap:.2e}")
+
+    def test_no_fallback_when_well_conditioned(self):
+        """Dữ liệu điều kiện tốt: fallback không chạy, kết quả trùng từng bit với gram_fallback=False."""
+        Xt, Y = make_data()
+        W0 = torch.zeros(Y.shape[1], Xt.shape[1], dtype=DT)
+        W1, n1 = irls(Xt, Y, MAE_DELTA, W0, gram_dtype=torch.float32)
+        self.assertEqual(irls.last_fallbacks, 0)
+        W2, n2 = irls(Xt, Y, MAE_DELTA, W0, gram_dtype=torch.float32, gram_fallback=False)
+        self.assertEqual(n1, n2)
+        self.assertTrue(torch.equal(W1, W2))
+
+
 class TestDLinearEquivalence(unittest.TestCase):
     """DLinear + weight decay ≡ Linear với phạt N⁻¹, với mọi hàm mất mát (NHAT_KY mục 1.5).
 
