@@ -185,6 +185,7 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
     # bước h đó đi sai và J_h tăng. Vì J tách theo h, lập lại riêng các A_h đó bằng kiểu của Xt rồi
     # giải lại; các h khác giữ nguyên. Toán của IRLS không đổi (docs/BAO_CAO_TIEU_CHI_DUNG.md mục 8).
     fallback = gram_fallback and Xg.dtype != Xt.dtype
+    fb_chunk = max(1, chunk * Xg.element_size() // Xt.element_size())
     if fallback:
         J_old, Jh_old = objective(W, per_h=True)
     else:
@@ -227,7 +228,9 @@ def irls(Xt, Y, delta, W0, lam=0.0, pen=None, constrained=False, max_iter=1000, 
             J_new, Jh_new = objective(W, per_h=True)
             bad = torch.nonzero(Jh_new > Jh_old * (1 + rise_tol)).flatten()
             if len(bad):
-                A_bad = weight_gram(Xt, w[:, bad], chunk) + Pen
+                # khối nhỏ hơn theo tỷ lệ cỡ kiểu số: tensor trung gian n·chunk·p không lớn hơn
+                # của bước thường (ETTm1 H = 720 với chunk 16 float64 là ~10 GB, tràn VRAM)
+                A_bad = weight_gram(Xt, w[:, bad], fb_chunk) + Pen
                 W = W.clone()
                 W[bad] = step(A_bad, g[bad], W_prev[bad])
                 J_new, Jh_new = objective(W, per_h=True)

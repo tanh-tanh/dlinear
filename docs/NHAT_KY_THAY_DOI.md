@@ -289,3 +289,12 @@ Test mới trong `tests/test_irls.py`, lớp `TestPatience`:
   - Dữ liệu điều kiện tốt: kết quả trùng từng bit.
   - Test: 41 → **43, tất cả đạt**.
 - **Lưu ý:** các dòng grid đã chạy trước khi sửa không bị lỗi, nhưng có thể đã có bước h đi sai rồi tự hồi phục mà không báo, vì tổng J vẫn giảm. Chưa kiểm.
+
+## 7.7. Fallback lập A_h theo khối nhỏ hơn
+
+- **Lỗi:** ETTm1 H = 720, Linear MAE λ = 0 chạy hơn 79 phút (ước lượng khoảng 37 phút).
+  - Tiến trình dùng 14,5 GB VRAM cộng 1,3 GB bộ nhớ dùng chung, tức đã tràn sang RAM hệ thống.
+  - Nguyên nhân: fallback float64 gọi `weight_gram` với cùng `chunk = 16`, nên tensor trung gian n·16·p·8 byte khoảng 10 GB ở ETTm1. Ở ETTh2 chỉ khoảng 2,3 GB nên không lộ ra.
+- **Sửa:** fallback dùng `fb_chunk = chunk · (cỡ kiểu gram)/(cỡ kiểu Xt)`, tức 8 với float32/float64. Tensor trung gian của fallback vì vậy không lớn hơn của bước thường. Toán không đổi.
+- **Đo trên ETTm1 H = 720:** bước float32 chunk 16 thêm 5,95 GiB; fallback float64 chunk 8 (40 bước h) thêm 4,75 GiB. Test 43/43 đạt.
+- Đã dừng runner (mất phần đang chạy dở của Linear MAE λ = 0) và chạy tiếp.
