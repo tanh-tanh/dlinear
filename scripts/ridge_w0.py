@@ -13,6 +13,7 @@ Lưới λ = runner.MSE_LAMS (141 giá trị dương và 0); λ* tối thiểu v
     python scripts/ridge_w0.py
 
 Kết quả: results/ridge_w0/path.csv (mọi λ), results/ridge_w0/summary.json (λ*, kiểm zero).
+Mỗi ô ghi riêng results/ridge_w0/cells/{ds}_H{H}.csv nên chạy lại = chạy tiếp.
 """
 import csv
 import sys
@@ -51,6 +52,39 @@ def solve(cell, model, lam, W0):
     return np.concatenate([W, b[:, None]], axis=1)
 
 
+def evaluate(cell, W):
+    """MSE, MAE val và test; đúng biểu thức của runner.Cell.evaluate nhưng bỏ phần train (không cần ở đây)."""
+    out = {}
+    for tag, name in (("va", "val"), ("te", "test")):
+        Rs = cell.d[f"Y_{tag}"] - cell.d[f"Xt_{tag}"] @ W.T
+        out[f"{name}_mse"] = float((Rs ** 2).mean())
+        out[f"{name}_mae"] = float(np.abs(Rs).mean())
+    return out
+
+
+def run_cell(ds, H):
+    f = OUT / "cells" / f"{ds}_H{H}.csv"
+    if f.exists():
+        with f.open(encoding="utf-8", newline="") as fh:
+            return [{**r, "H": int(r["H"]), "lam": float(r["lam"]), **{k: float(r[k]) for k in CHECK}}
+                    for r in csv.DictReader(fh)]
+    cell = R.Cell(ds, H)
+    rows = []
+    for model in MODELS:
+        for w0 in W0S:
+            W0 = make_W0(w0, H, R.L)
+            rows += [{"dataset": ds, "H": H, "model": model, "W0": w0, "lam": lam,
+                      **evaluate(cell, solve(cell, model, lam, W0))} for lam in R.MSE_LAMS]
+    f.parent.mkdir(parents=True, exist_ok=True)
+    tmp = f.with_suffix(".tmp")
+    with tmp.open("w", encoding="utf-8", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+        w.writeheader()
+        w.writerows(rows)
+    tmp.replace(f)
+    return rows
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     main_rows = {}
@@ -61,29 +95,23 @@ def main():
     path_rows, summary, max_dev, missing = [], [], 0.0, 0
     for ds in R.DATASETS:
         for H in R.HORIZONS:
-            cell = R.Cell(ds, H)
+            cell_rows = run_cell(ds, H)
             for model in MODELS:
                 for w0 in W0S:
-                    W0 = make_W0(w0, H, R.L)
-                    rows = []
-                    for lam in R.MSE_LAMS:
-                        m = cell.evaluate(solve(cell, model, lam, W0), model, "MSE", 0.0)
-                        row = {"dataset": ds, "H": H, "model": model, "W0": w0, "lam": lam,
-                               **{k: m[k] for k in CHECK}}
-                        rows.append(row)
-                        if w0 == "zero":
-                            ref = main_rows.get((ds, H, model, R.lam_key(lam)))
+                    rows = [r for r in cell_rows if (r["model"], r["W0"]) == (model, w0)]
+                    if w0 == "zero":
+                        for r in rows:
+                            ref = main_rows.get((ds, H, model, R.lam_key(r["lam"])))
                             if ref is None:
                                 missing += 1
                             else:
-                                max_dev = max(max_dev, *(abs(m[k] - float(ref[k])) for k in CHECK))
+                                max_dev = max(max_dev, *(abs(r[k] - float(ref[k])) for k in CHECK))
                     best = min(rows, key=lambda r: r["val_mse"])
                     summary.append({**best, "lam_star": best["lam"],
                                     "lam_at_edge": best["lam"] in (R.MSE_LAMS[0], R.MSE_LAMS[-1])})
                     path_rows += rows
                     print(f"{ds} H={H:>3} {model:<7} W0={w0:<4}: λ* = {best['lam']:>10.4g} val MSE {best['val_mse']:.6f} "
                           f"test MSE {best['test_mse']:.6f}", flush=True)
-            del cell
     with (OUT / "path.csv").open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(path_rows[0]))
         w.writeheader()
