@@ -74,7 +74,7 @@ def mse_star(rows):
 
 def load_sgd():
     runs = {}
-    for f in sorted(SGD.glob("*_H*_seed*.json")):
+    for f in sorted(SGD.glob("*Linear_H*_seed*.json")):
         r = json.loads(f.read_text(encoding="utf-8"))
         runs.setdefault((r["model"], r["H"]), []).append(r)
     return runs
