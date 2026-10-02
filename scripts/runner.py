@@ -8,7 +8,7 @@ Chọn λ* bằng scripts/select_lambda.py.
     python scripts/runner.py --dry-run                         # danh sách việc và ước lượng thời gian
 
 Cách giải
-    MSE: dạng đóng trên λ ∈ {0} ∪ logspace(−2, 5, 36). Linear: ridge; DLinear: ridge với phạt λ·N⁻¹;
+    MSE: dạng đóng trên λ ∈ {0} ∪ logspace(−2, 5, 141) (20 giá trị mỗi bậc; lưới cũ 36 giá trị là tập con). Linear: ridge; DLinear: ridge với phạt λ·N⁻¹;
         NLinear: ridge trên chuỗi đã trừ giá trị cuối (nlinear_transform), bằng NLinear ràng buộc với
         phạt diag(1, …, 1, 0) (thế w_L = 1 − Σ_{j<L} w_j); λ = 0 là nlinear_constrained.
     MAE, Huber: irls chế độ pha, chunk 16, λ ∈ IRLS_LAMS tăng dần, warm start; λ = 0 khởi tạo từ
@@ -51,7 +51,7 @@ DATASETS = ["ETTh1", "ETTh2", "ETTm1"]
 HORIZONS = [96, 192, 336, 720]
 MODELS = ["Linear", "DLinear", "NLinear"]
 OBJECTIVES = ["MSE", "MAE", "Huber"]
-MSE_LAMS = [0.0] + [float(f"{x:.6g}") for x in np.logspace(-2, 5, 36)]
+MSE_LAMS = [0.0] + [float(f"{x:.6g}") for x in np.logspace(-2, 5, 141)]   # NHIEM_VU_3 C.2; cũ: 36 giá trị
 IRLS_LAMS = [0.0, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0, 3000.0, 10000.0]
 MAX_EXTEND = 2
 CHUNK = 16
@@ -71,7 +71,8 @@ WEIGHTS = ROOT / "results" / "weights"
 COLUMNS = ["dataset", "H", "model", "objective", "lam", "lam_convention", "delta", "k",
            "train_obj", "val_mse", "val_mae", "val_huber", "test_mse", "test_mae",
            "n_iter", "converged", "seconds", "init", "derived_from",
-           "tol", "patience", "chunk", "gram_dtype", "gpu", "torch_version", "git_commit", "timestamp"]
+           "tol", "patience", "chunk", "gram_dtype", "gpu", "torch_version", "git_commit", "timestamp",
+           "n_fallback"]
 
 
 def lam_key(lam):
@@ -99,8 +100,13 @@ class Writer:
         PATH_CSV.parent.mkdir(parents=True, exist_ok=True)
         WEIGHTS.mkdir(parents=True, exist_ok=True)
         new = not PATH_CSV.exists()
+        # file đã có: giữ đúng header của nó (lambda_path.csv chưa có cột n_fallback), bỏ cột thừa
+        fields = COLUMNS
+        if not new:
+            with PATH_CSV.open(encoding="utf-8", newline="") as f:
+                fields = next(csv.reader(f))
         self.f = PATH_CSV.open("a", encoding="utf-8", newline="")
-        self.w = csv.DictWriter(self.f, fieldnames=COLUMNS)
+        self.w = csv.DictWriter(self.f, fieldnames=fields, extrasaction="ignore")
         if new:
             self.w.writeheader()
         self.env = {"gpu": torch.cuda.get_device_name(0), "torch_version": torch.__version__,
@@ -291,7 +297,7 @@ def run_irls_path(cell, model, obj, done, writer):
         W, n, conv, sec = cell.run_irls(model, W0, delta, lam, t, patience)
         row = base_row(cell, model, obj, lam)
         row.update(init=init, n_iter=n, converged=conv, seconds=sec, tol=t, patience=patience, chunk=cell.chunk,
-                   gram_dtype="float32", **cell.evaluate(W, model, obj, lam))
+                   gram_dtype="float32", n_fallback=irls.last_fallbacks, **cell.evaluate(W, model, obj, lam))
         writer.write(row, W)
         done[key] = row
         print(f"  {cell.ds} H={cell.H} {model} {obj} λ = {lam:g}: {n} vòng, {sec:.1f} s, "
