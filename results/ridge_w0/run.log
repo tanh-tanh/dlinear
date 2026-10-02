@@ -1,0 +1,74 @@
+ETTh1 H= 96 Linear  W0=zero: λ* =          0 val MSE 0.651630 test MSE 0.370235
+ETTh1 H= 96 Linear  W0=mean: λ* =          0 val MSE 0.651630 test MSE 0.370235
+ETTh1 H= 96 Linear  W0=last: λ* =       1413 val MSE 0.648941 test MSE 0.375090
+ETTh1 H= 96 DLinear W0=zero: λ* =      446.7 val MSE 0.651554 test MSE 0.369827
+ETTh1 H= 96 DLinear W0=mean: λ* =      398.1 val MSE 0.651566 test MSE 0.369859
+ETTh1 H= 96 DLinear W0=last: λ* =       3548 val MSE 0.648350 test MSE 0.376651
+ETTh1 H=192 Linear  W0=zero: λ* =      223.9 val MSE 0.870757 test MSE 0.403969
+ETTh1 H=192 Linear  W0=mean: λ* =      177.8 val MSE 0.870763 test MSE 0.404002
+ETTh1 H=192 Linear  W0=last: λ* =       1122 val MSE 0.868529 test MSE 0.407762
+ETTh1 H=192 DLinear W0=zero: λ* =       1000 val MSE 0.870564 test MSE 0.403553
+ETTh1 H=192 DLinear W0=mean: λ* =      891.3 val MSE 0.870603 test MSE 0.403585
+ETTh1 H=192 DLinear W0=last: λ* =       3162 val MSE 0.867478 test MSE 0.409528
+ETTh1 H=336 Linear  W0=zero: λ* =       1995 val MSE 1.063113 test MSE 0.432378
+ETTh1 H=336 Linear  W0=mean: λ* =       1585 val MSE 1.063189 test MSE 0.432488
+ETTh1 H=336 Linear  W0=last: λ* =      501.2 val MSE 1.062715 test MSE 0.434482
+ETTh1 H=336 DLinear W0=zero: λ* =       4467 val MSE 1.062583 test MSE 0.431733
+ETTh1 H=336 DLinear W0=mean: λ* =       3162 val MSE 1.062768 test MSE 0.431923
+ETTh1 H=336 DLinear W0=last: λ* =       1995 val MSE 1.061836 test MSE 0.435746
+ETTh1 H=720 Linear  W0=zero: λ* =  1.778e+04 val MSE 1.216229 test MSE 0.470075
+ETTh1 H=720 Linear  W0=mean: λ* =      1e+04 val MSE 1.216905 test MSE 0.469409
+ETTh1 H=720 Linear  W0=last: λ* =      223.9 val MSE 1.218462 test MSE 0.471658
+ETTh1 H=720 DLinear W0=zero: λ* =  1.778e+04 val MSE 1.215641 test MSE 0.469654
+ETTh1 H=720 DLinear W0=mean: λ* =  1.122e+04 val MSE 1.216421 test MSE 0.469064
+ETTh1 H=720 DLinear W0=last: λ* =       1000 val MSE 1.217924 test MSE 0.471914
+ETTh2 H= 96 Linear  W0=zero: λ* =       1585 val MSE 0.221236 test MSE 0.300898
+ETTh2 H= 96 Linear  W0=mean: λ* =       1778 val MSE 0.221202 test MSE 0.300798
+ETTh2 H= 96 Linear  W0=last: λ* =      28.18 val MSE 0.221941 test MSE 0.301850
+ETTh2 H= 96 DLinear W0=zero: λ* =       1995 val MSE 0.221297 test MSE 0.300778
+ETTh2 H= 96 DLinear W0=mean: λ* =       1995 val MSE 0.221248 test MSE 0.300687
+ETTh2 H= 96 DLinear W0=last: λ* =      316.2 val MSE 0.221853 test MSE 0.301716
+ETTh2 H=192 Linear  W0=zero: λ* =       1122 val MSE 0.302844 test MSE 0.396614
+ETTh2 H=192 Linear  W0=mean: λ* =       1259 val MSE 0.302809 test MSE 0.396513
+ETTh2 H=192 Linear  W0=last: λ* =        100 val MSE 0.303209 test MSE 0.397139
+ETTh2 H=192 DLinear W0=zero: λ* =       1259 val MSE 0.302879 test MSE 0.396583
+ETTh2 H=192 DLinear W0=mean: λ* =       1413 val MSE 0.302837 test MSE 0.396469
+ETTh2 H=192 DLinear W0=last: λ* =      501.2 val MSE 0.303068 test MSE 0.396985
+ETTh2 H=336 Linear  W0=zero: λ* =       1000 val MSE 0.408679 test MSE 0.485329
+ETTh2 H=336 Linear  W0=mean: λ* =       1122 val MSE 0.408641 test MSE 0.485199
+ETTh2 H=336 Linear  W0=last: λ* =      177.8 val MSE 0.408880 test MSE 0.485822
+ETTh2 H=336 DLinear W0=zero: λ* =       1122 val MSE 0.408685 test MSE 0.485331
+ETTh2 H=336 DLinear W0=mean: λ* =       1259 val MSE 0.408642 test MSE 0.485192
+ETTh2 H=336 DLinear W0=last: λ* =      707.9 val MSE 0.408680 test MSE 0.485704
+ETTh2 H=720 Linear  W0=zero: λ* =       1000 val MSE 0.667265 test MSE 0.740365
+ETTh2 H=720 Linear  W0=mean: λ* =       1122 val MSE 0.667221 test MSE 0.740152
+ETTh2 H=720 Linear  W0=last: λ* =      281.8 val MSE 0.667256 test MSE 0.740366
+ETTh2 H=720 DLinear W0=zero: λ* =       1122 val MSE 0.667238 test MSE 0.740341
+ETTh2 H=720 DLinear W0=mean: λ* =       1259 val MSE 0.667191 test MSE 0.740116
+ETTh2 H=720 DLinear W0=last: λ* =       1259 val MSE 0.666836 test MSE 0.740000
+ETTm1 H= 96 Linear  W0=zero: λ* =        631 val MSE 0.382168 test MSE 0.299230
+ETTm1 H= 96 Linear  W0=mean: λ* =        631 val MSE 0.382169 test MSE 0.299230
+ETTm1 H= 96 Linear  W0=last: λ* =      794.3 val MSE 0.382015 test MSE 0.299739
+ETTm1 H= 96 DLinear W0=zero: λ* =       1413 val MSE 0.382137 test MSE 0.299195
+ETTm1 H= 96 DLinear W0=mean: λ* =       1413 val MSE 0.382139 test MSE 0.299193
+ETTm1 H= 96 DLinear W0=last: λ* =       2818 val MSE 0.381854 test MSE 0.300177
+ETTm1 H=192 Linear  W0=zero: λ* =      354.8 val MSE 0.489933 test MSE 0.333965
+ETTm1 H=192 Linear  W0=mean: λ* =      316.2 val MSE 0.489934 test MSE 0.333968
+ETTm1 H=192 Linear  W0=last: λ* =       1122 val MSE 0.489583 test MSE 0.334652
+ETTm1 H=192 DLinear W0=zero: λ* =       1122 val MSE 0.489911 test MSE 0.333928
+ETTm1 H=192 DLinear W0=mean: λ* =       1000 val MSE 0.489915 test MSE 0.333932
+ETTm1 H=192 DLinear W0=last: λ* =       4467 val MSE 0.489194 test MSE 0.335456
+ETTm1 H=336 Linear  W0=zero: λ* =      446.7 val MSE 0.617659 test MSE 0.368333
+ETTm1 H=336 Linear  W0=mean: λ* =      398.1 val MSE 0.617661 test MSE 0.368336
+ETTm1 H=336 Linear  W0=last: λ* =       1122 val MSE 0.617269 test MSE 0.368995
+ETTm1 H=336 DLinear W0=zero: λ* =       1259 val MSE 0.617634 test MSE 0.368295
+ETTm1 H=336 DLinear W0=mean: λ* =       1122 val MSE 0.617641 test MSE 0.368299
+ETTm1 H=336 DLinear W0=last: λ* =       5012 val MSE 0.616802 test MSE 0.369981
+ETTm1 H=720 Linear  W0=zero: λ* =       1259 val MSE 0.871302 test MSE 0.423199
+ETTm1 H=720 Linear  W0=mean: λ* =       1000 val MSE 0.871312 test MSE 0.423213
+ETTm1 H=720 Linear  W0=last: λ* =       1000 val MSE 0.870973 test MSE 0.423816
+ETTm1 H=720 DLinear W0=zero: λ* =       2512 val MSE 0.871253 test MSE 0.423162
+ETTm1 H=720 DLinear W0=mean: λ* =       1995 val MSE 0.871275 test MSE 0.423174
+ETTm1 H=720 DLinear W0=last: λ* =       4467 val MSE 0.870515 test MSE 0.424597
+kiểm zero so với lambda_path.csv: lệch lớn nhất 2.22e-16, thiếu 0 dòng → ĐẠT
+→ results\ridge_w0\summary.json

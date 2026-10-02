@@ -1,0 +1,73 @@
+[ETTh2 H=336 Linear MAE]
+  ETTh2 H=336 Linear MAE λ = 0: 453 vòng, 247.7 s, val MSE 0.373850 MAE 0.416163
+  ETTh2 H=336 Linear MAE λ = 1: 1 vòng, 0.6 s, val MSE 0.373850 MAE 0.416163
+  ETTh2 H=336 Linear MAE λ = 3: 39 vòng, 21.4 s, val MSE 0.373848 MAE 0.416162
+  ETTh2 H=336 Linear MAE λ = 10: 219 vòng, 120.1 s, val MSE 0.373834 MAE 0.416151
+  ETTh2 H=336 Linear MAE λ = 30: 258 vòng, 142.0 s, val MSE 0.373808 MAE 0.416131
+  ETTh2 H=336 Linear MAE λ = 100: 241 vòng, 133.1 s, val MSE 0.373731 MAE 0.416074
+  ETTh2 H=336 Linear MAE λ = 300: 187 vòng, 104.8 s, val MSE 0.373564 MAE 0.415950
+  ETTh2 H=336 Linear MAE λ = 1000: 142 vòng, 79.4 s, val MSE 0.373387 MAE 0.415832
+  ETTh2 H=336 Linear MAE λ = 3000: 120 vòng, 66.6 s, val MSE 0.373871 MAE 0.416250
+  ETTh2 H=336 Linear MAE λ = 10000: 110 vòng, 60.8 s, val MSE 0.376707 MAE 0.418563
+[ETTh2 H=336 NLinear MAE]
+  ETTh2 H=336 NLinear MAE λ = 0: 445 vòng, 243.5 s, val MSE 0.356894 MAE 0.404519
+  ETTh2 H=336 NLinear MAE λ = 1: 1 vòng, 0.6 s, val MSE 0.356894 MAE 0.404519
+  ETTh2 H=336 NLinear MAE λ = 3: 20 vòng, 11.0 s, val MSE 0.356894 MAE 0.404519
+  ETTh2 H=336 NLinear MAE λ = 10: 209 vòng, 114.5 s, val MSE 0.356878 MAE 0.404505
+  ETTh2 H=336 NLinear MAE λ = 30: 251 vòng, 136.9 s, val MSE 0.356841 MAE 0.404476
+  ETTh2 H=336 NLinear MAE λ = 100: 238 vòng, 130.5 s, val MSE 0.356723 MAE 0.404382
+  ETTh2 H=336 NLinear MAE λ = 300: 185 vòng, 101.7 s, val MSE 0.356475 MAE 0.404194
+  ETTh2 H=336 NLinear MAE λ = 1000: 138 vòng, 77.9 s, val MSE 0.356082 MAE 0.403913
+  ETTh2 H=336 NLinear MAE λ = 3000: 115 vòng, 64.5 s, val MSE 0.356080 MAE 0.404009
+  ETTh2 H=336 NLinear MAE λ = 10000: 99 vòng, 55.0 s, val MSE 0.357549 MAE 0.405448
+[ETTh1 H=720 DLinear MAE]
+  ETTh1 H=720 Linear MAE λ = 0: 476 vòng, 558.9 s, fallback 0
+  ETTh1 H=720 DLinear MAE λ = 1: 1 vòng, 1.3 s, val MSE 1.279641 MAE 0.769410
+  ETTh1 H=720 DLinear MAE λ = 3: 1 vòng, 1.3 s, val MSE 1.279641 MAE 0.769410
+  ETTh1 H=720 DLinear MAE λ = 10: 197 vòng, 230.3 s, val MSE 1.279632 MAE 0.769405
+  ETTh1 H=720 DLinear MAE λ = 30: 262 vòng, 306.1 s, val MSE 1.279560 MAE 0.769379
+  ETTh1 H=720 DLinear MAE λ = 100: 248 vòng, 290.2 s, val MSE 1.279280 MAE 0.769282
+  ETTh1 H=720 DLinear MAE λ = 300: 191 vòng, 223.7 s, val MSE 1.278606 MAE 0.769053
+  ETTh1 H=720 DLinear MAE λ = 1000: 146 vòng, 171.2 s, val MSE 1.276920 MAE 0.768558
+  ETTh1 H=720 DLinear MAE λ = 3000: 123 vòng, 144.5 s, val MSE 1.273946 MAE 0.767864
+  ETTh1 H=720 DLinear MAE λ = 10000: 106 vòng, 124.6 s, val MSE 1.269296 MAE 0.767289
+  λ* ở đầu mút: mở rộng λ = 30000
+  ETTh1 H=720 DLinear MAE λ = 30000: 98 vòng, 115.1 s, val MSE 1.265086 MAE 0.767977
+  λ* ở đầu mút: mở rộng λ = 90000
+  ETTh1 H=720 DLinear MAE λ = 90000: 90 vòng, 105.5 s, val MSE 1.265996 MAE 0.772097
+ETTh2 H=336 Linear: lệch lớn nhất 0.00e+00, λ* {'val_mae': {'old': 1000.0, 'new': 1000.0}, 'val_mse': {'old': 1000.0, 'new': 1000.0}}, fallback mới 0 bước h → ĐẠT
+    λ =        0: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 453→453 fallback 0
+    λ =        1: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 1→1 fallback 0
+    λ =        3: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 39→39 fallback 0
+    λ =       10: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 219→219 fallback 0
+    λ =       30: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 258→258 fallback 0
+    λ =      100: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 241→241 fallback 0
+    λ =      300: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 187→187 fallback 0
+    λ =     1000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 142→142 fallback 0
+    λ =     3000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 120→120 fallback 0
+    λ =    10000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 110→110 fallback 0
+ETTh2 H=336 NLinear: lệch lớn nhất 0.00e+00, λ* {'val_mae': {'old': 1000.0, 'new': 1000.0}, 'val_mse': {'old': 3000.0, 'new': 3000.0}}, fallback mới 0 bước h → ĐẠT
+    λ =        0: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 445→445 fallback 0
+    λ =        1: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 1→1 fallback 0
+    λ =        3: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 20→20 fallback 0
+    λ =       10: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 209→209 fallback 0
+    λ =       30: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 251→251 fallback 0
+    λ =      100: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 238→238 fallback 0
+    λ =      300: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 185→185 fallback 0
+    λ =     1000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 138→138 fallback 0
+    λ =     3000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 115→115 fallback 0
+    λ =    10000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 99→99 fallback 0
+ETTh1 H=720 DLinear: lệch lớn nhất 0.00e+00, λ* {'val_mae': {'old': 10000.0, 'new': 10000.0}, 'val_mse': {'old': 30000.0, 'new': 30000.0}}, fallback mới 0 bước h → ĐẠT
+    λ =        0: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 476→476 fallback 0
+    λ =        1: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 1→1 fallback 0
+    λ =        3: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 1→1 fallback 0
+    λ =       10: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 197→197 fallback 0
+    λ =       30: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 262→262 fallback 0
+    λ =      100: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 248→248 fallback 0
+    λ =      300: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 191→191 fallback 0
+    λ =     1000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 146→146 fallback 0
+    λ =     3000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 123→123 fallback 0
+    λ =    10000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 106→106 fallback 0
+    λ =    30000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 98→98 fallback 0
+    λ =    90000: Δtest MSE +0.0e+00 Δval MAE +0.0e+00 vòng 90→90 fallback 0
+→ results\recheck\compare.json

@@ -1,0 +1,74 @@
+→ results\sgd_etth2\DLinear_H96_seed2021.json
+  DLinear H=96 seed 2021: epoch tốt nhất 10/10, val MSE 0.220183, test MSE 0.300017 MAE 0.363964, 11 s
+→ results\sgd_etth2\DLinear_H96_seed2022.json
+  DLinear H=96 seed 2022: epoch tốt nhất 6/9, val MSE 0.218243, test MSE 0.287142 MAE 0.352199, 8 s
+→ results\sgd_etth2\DLinear_H96_seed2023.json
+  DLinear H=96 seed 2023: epoch tốt nhất 8/10, val MSE 0.216774, test MSE 0.287602 MAE 0.354943, 9 s
+→ results\sgd_etth2\Linear_H96_seed2021.json
+  Linear H=96 seed 2021: epoch tốt nhất 6/9, val MSE 0.212023, test MSE 0.285674 MAE 0.349761, 4 s
+→ results\sgd_etth2\Linear_H96_seed2022.json
+  Linear H=96 seed 2022: epoch tốt nhất 4/7, val MSE 0.220667, test MSE 0.311397 MAE 0.372884, 3 s
+→ results\sgd_etth2\Linear_H96_seed2023.json
+  Linear H=96 seed 2023: epoch tốt nhất 9/10, val MSE 0.216087, test MSE 0.290570 MAE 0.355910, 4 s
+→ results\sgd_etth2\NLinear_H96_seed2021.json
+  NLinear H=96 seed 2021: epoch tốt nhất 10/10, val MSE 0.205823, test MSE 0.275827 MAE 0.337589, 5 s
+→ results\sgd_etth2\NLinear_H96_seed2022.json
+  NLinear H=96 seed 2022: epoch tốt nhất 9/10, val MSE 0.206258, test MSE 0.275180 MAE 0.336689, 5 s
+→ results\sgd_etth2\NLinear_H96_seed2023.json
+  NLinear H=96 seed 2023: epoch tốt nhất 9/10, val MSE 0.206092, test MSE 0.275911 MAE 0.337627, 5 s
+→ results\sgd_etth2\DLinear_H192_seed2021.json
+  DLinear H=192 seed 2021: epoch tốt nhất 9/10, val MSE 0.307018, test MSE 0.411563 MAE 0.437708, 10 s
+→ results\sgd_etth2\DLinear_H192_seed2022.json
+  DLinear H=192 seed 2022: epoch tốt nhất 10/10, val MSE 0.296126, test MSE 0.379434 MAE 0.415497, 10 s
+→ results\sgd_etth2\DLinear_H192_seed2023.json
+  DLinear H=192 seed 2023: epoch tốt nhất 5/8, val MSE 0.293970, test MSE 0.373184 MAE 0.408171, 8 s
+→ results\sgd_etth2\Linear_H192_seed2021.json
+  Linear H=192 seed 2021: epoch tốt nhất 1/4, val MSE 0.337454, test MSE 0.522708 MAE 0.497058, 2 s
+→ results\sgd_etth2\Linear_H192_seed2022.json
+  Linear H=192 seed 2022: epoch tốt nhất 10/10, val MSE 0.298964, test MSE 0.385300 MAE 0.417950, 5 s
+→ results\sgd_etth2\Linear_H192_seed2023.json
+  Linear H=192 seed 2023: epoch tốt nhất 8/10, val MSE 0.294827, test MSE 0.378114 MAE 0.412535, 5 s
+→ results\sgd_etth2\NLinear_H192_seed2021.json
+  NLinear H=192 seed 2021: epoch tốt nhất 6/9, val MSE 0.272516, test MSE 0.346978 MAE 0.381945, 5 s
+→ results\sgd_etth2\NLinear_H192_seed2022.json
+  NLinear H=192 seed 2022: epoch tốt nhất 8/10, val MSE 0.272173, test MSE 0.351994 MAE 0.385598, 6 s
+→ results\sgd_etth2\NLinear_H192_seed2023.json
+  NLinear H=192 seed 2023: epoch tốt nhất 10/10, val MSE 0.272975, test MSE 0.340194 MAE 0.380065, 6 s
+→ results\sgd_etth2\DLinear_H336_seed2021.json
+  DLinear H=336 seed 2021: epoch tốt nhất 6/9, val MSE 0.381667, test MSE 0.419008 MAE 0.441473, 10 s
+→ results\sgd_etth2\DLinear_H336_seed2022.json
+  DLinear H=336 seed 2022: epoch tốt nhất 7/10, val MSE 0.390672, test MSE 0.434875 MAE 0.451589, 11 s
+→ results\sgd_etth2\DLinear_H336_seed2023.json
+  DLinear H=336 seed 2023: epoch tốt nhất 9/10, val MSE 0.401663, test MSE 0.472979 MAE 0.478346, 12 s
+→ results\sgd_etth2\Linear_H336_seed2021.json
+  Linear H=336 seed 2021: epoch tốt nhất 8/10, val MSE 0.399066, test MSE 0.458642 MAE 0.467641, 6 s
+→ results\sgd_etth2\Linear_H336_seed2022.json
+  Linear H=336 seed 2022: epoch tốt nhất 5/8, val MSE 0.387666, test MSE 0.418415 MAE 0.441026, 5 s
+→ results\sgd_etth2\Linear_H336_seed2023.json
+  Linear H=336 seed 2023: epoch tốt nhất 6/9, val MSE 0.397621, test MSE 0.486026 MAE 0.477761, 5 s
+→ results\sgd_etth2\NLinear_H336_seed2021.json
+  NLinear H=336 seed 2021: epoch tốt nhất 5/8, val MSE 0.363260, test MSE 0.388878 MAE 0.418868, 7 s
+→ results\sgd_etth2\NLinear_H336_seed2022.json
+  NLinear H=336 seed 2022: epoch tốt nhất 6/9, val MSE 0.359331, test MSE 0.377865 MAE 0.408982, 8 s
+→ results\sgd_etth2\NLinear_H336_seed2023.json
+  NLinear H=336 seed 2023: epoch tốt nhất 5/8, val MSE 0.361410, test MSE 0.413862 MAE 0.428595, 7 s
+→ results\sgd_etth2\DLinear_H720_seed2021.json
+  DLinear H=720 seed 2021: epoch tốt nhất 10/10, val MSE 0.670009, test MSE 0.747228 MAE 0.616402, 21 s
+→ results\sgd_etth2\DLinear_H720_seed2022.json
+  DLinear H=720 seed 2022: epoch tốt nhất 9/10, val MSE 0.663710, test MSE 0.715085 MAE 0.603002, 21 s
+→ results\sgd_etth2\DLinear_H720_seed2023.json
+  DLinear H=720 seed 2023: epoch tốt nhất 9/10, val MSE 0.662147, test MSE 0.745308 MAE 0.610703, 21 s
+→ results\sgd_etth2\Linear_H720_seed2021.json
+  Linear H=720 seed 2021: epoch tốt nhất 6/9, val MSE 0.649303, test MSE 0.691710 MAE 0.591780, 10 s
+→ results\sgd_etth2\Linear_H720_seed2022.json
+  Linear H=720 seed 2022: epoch tốt nhất 7/10, val MSE 0.650663, test MSE 0.691508 MAE 0.589855, 11 s
+→ results\sgd_etth2\Linear_H720_seed2023.json
+  Linear H=720 seed 2023: epoch tốt nhất 9/10, val MSE 0.661228, test MSE 0.722880 MAE 0.602499, 11 s
+→ results\sgd_etth2\NLinear_H720_seed2021.json
+  NLinear H=720 seed 2021: epoch tốt nhất 10/10, val MSE 0.611726, test MSE 0.395153 MAE 0.436839, 12 s
+→ results\sgd_etth2\NLinear_H720_seed2022.json
+  NLinear H=720 seed 2022: epoch tốt nhất 8/10, val MSE 0.603124, test MSE 0.396822 MAE 0.436877, 12 s
+→ results\sgd_etth2\NLinear_H720_seed2023.json
+  NLinear H=720 seed 2023: epoch tốt nhất 4/7, val MSE 0.617037, test MSE 0.420056 MAE 0.451535, 8 s
+A.2: test MSE 0.382463 MAE 0.404847 (tham chiếu (0.3825, 0.4048)), đạt
+→ results\sgd_etth2\a2_etth1_H96_seed42.json

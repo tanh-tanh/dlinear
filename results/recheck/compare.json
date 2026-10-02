@@ -1,0 +1,502 @@
+{
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "gpu_mem_gib": 15.90179443359375,
+  "compute_capability": "12.0",
+  "torch": "2.14.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 92400,
+  "driver": "616.92",
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.5",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "float32_matmul_precision": "highest"
+ },
+ "git_commit": "a5d8a36b82bc",
+ "date": "2026-10-02 23:35:49",
+ "tol": 1e-05,
+ "pass": true,
+ "paths": [
+  {
+   "dataset": "ETTh2",
+   "H": 336,
+   "model": "Linear",
+   "objective": "MAE",
+   "max_abs_dev": 0.0,
+   "lam_star": {
+    "val_mae": {
+     "old": 1000.0,
+     "new": 1000.0
+    },
+    "val_mse": {
+     "old": 1000.0,
+     "new": 1000.0
+    }
+   },
+   "same_lam_star": true,
+   "pass": true,
+   "rows": [
+    {
+     "lam": 0.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 453,
+     "n_iter_new": 453,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 1.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 1,
+     "n_iter_new": 1,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 3.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 39,
+     "n_iter_new": 39,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 10.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 219,
+     "n_iter_new": 219,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 30.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 258,
+     "n_iter_new": 258,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 100.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 241,
+     "n_iter_new": 241,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 300.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 187,
+     "n_iter_new": 187,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 1000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 142,
+     "n_iter_new": 142,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 3000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 120,
+     "n_iter_new": 120,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 10000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 110,
+     "n_iter_new": 110,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    }
+   ]
+  },
+  {
+   "dataset": "ETTh2",
+   "H": 336,
+   "model": "NLinear",
+   "objective": "MAE",
+   "max_abs_dev": 0.0,
+   "lam_star": {
+    "val_mae": {
+     "old": 1000.0,
+     "new": 1000.0
+    },
+    "val_mse": {
+     "old": 3000.0,
+     "new": 3000.0
+    }
+   },
+   "same_lam_star": true,
+   "pass": true,
+   "rows": [
+    {
+     "lam": 0.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 445,
+     "n_iter_new": 445,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 1.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 1,
+     "n_iter_new": 1,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 3.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 20,
+     "n_iter_new": 20,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 10.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 209,
+     "n_iter_new": 209,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 30.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 251,
+     "n_iter_new": 251,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 100.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 238,
+     "n_iter_new": 238,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 300.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 185,
+     "n_iter_new": 185,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 1000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 138,
+     "n_iter_new": 138,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 3000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 115,
+     "n_iter_new": 115,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 10000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 99,
+     "n_iter_new": 99,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    }
+   ]
+  },
+  {
+   "dataset": "ETTh1",
+   "H": 720,
+   "model": "DLinear",
+   "objective": "MAE",
+   "max_abs_dev": 0.0,
+   "lam_star": {
+    "val_mae": {
+     "old": 10000.0,
+     "new": 10000.0
+    },
+    "val_mse": {
+     "old": 30000.0,
+     "new": 30000.0
+    }
+   },
+   "same_lam_star": true,
+   "pass": true,
+   "rows": [
+    {
+     "lam": 0.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 476,
+     "n_iter_new": 476,
+     "n_fallback_new": 0,
+     "derived_from": "Linear",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 1.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 1,
+     "n_iter_new": 1,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 3.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 1,
+     "n_iter_new": 1,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 10.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 197,
+     "n_iter_new": 197,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 30.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 262,
+     "n_iter_new": 262,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 100.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 248,
+     "n_iter_new": 248,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 300.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 191,
+     "n_iter_new": 191,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 1000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 146,
+     "n_iter_new": 146,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 3000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 123,
+     "n_iter_new": 123,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 10000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 106,
+     "n_iter_new": 106,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 30000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 98,
+     "n_iter_new": 98,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    },
+    {
+     "lam": 90000.0,
+     "d_val_mse": 0.0,
+     "d_val_mae": 0.0,
+     "d_val_huber": 0.0,
+     "d_test_mse": 0.0,
+     "d_test_mae": 0.0,
+     "n_iter_old": 90,
+     "n_iter_new": 90,
+     "n_fallback_new": 0,
+     "derived_from": "",
+     "commit_old": "0c39bb9363fb"
+    }
+   ]
+  }
+ ]
+}

@@ -303,3 +303,44 @@ Test mới trong `tests/test_irls.py`, lớp `TestPatience`:
   2. Phân mảnh bộ nhớ: cấp phát thật 11,6 GiB nhưng PyTorch dự trữ tới 15,2 GiB. Sửa trong `runner.py`:
      - đặt `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` trước khi import torch;
      - dùng `chunk = 8` cho ô có n·H > 1e8 (chỉ ETTm1 H = 720). Đo trên ETTm1 H = 720: dự trữ 14,05 GiB, 5,0 s/vòng (chunk 16: 4,8 s/vòng). Cột `chunk` của CSV ghi đúng giá trị đã dùng.
+
+---
+
+# Nhật ký thay đổi code: nhiệm vụ 3, SGD trên ETTh2, kiểm giả thuyết, ba việc rẻ (02/10/2026)
+
+Phạm vi: `docs/NHIEM_VU_3.md`. Kết quả ở [BAO_CAO_ETTH2_SGD.md](BAO_CAO_ETTH2_SGD.md).
+
+## 8.1. `src/models.py`: Linear, NLinear, `effective_weights`
+
+- **Lớp mới `Linear`, `NLinear`:** chép đúng `models/Linear.py`, `models/NLinear.py` của LTSF-Linear với `individual=False`.
+  - NLinear giữ `nn.Linear(L, H)` đủ L cột (cột cuối nhân với x_L − x_L = 0, không có gradient), để khởi tạo tiêu thụ cùng số ngẫu nhiên như repo gốc.
+- **`MODELS`:** từ điển tên → lớp, cho cả ba mô hình.
+- **`effective_weights(model)`:** trả (W_eff [H, L], b [H]) float64.
+  - DLinear: W_eff = W_t P + W_s (I − P), b = b_t + b_s.
+  - NLinear: `nlinear_effective(W[:, :-1])`, mỗi hàng cộng bằng 1.
+- **Test mới (`tests/test_models.py`):** X W_effᵀ + b trùng forward của mô hình tới 1e-12 (float64, trọng số đã xáo khỏi khởi tạo); NLinear tổng hàng bằng 1; Linear và NLinear cùng khởi tạo với `nn.Linear` khi cùng seed. Test: 43 → **46, tất cả đạt**.
+- `src/sgd.py` **không đổi**: `train_sgd` đã có đủ lr, epoch, patience, `lradj`; batch size và `drop_last` đặt ở DataLoader.
+
+## 8.2. `scripts/runner.py`
+
+- **Lưới MSE:** `MSE_LAMS` = {0} ∪ logspace(−2, 5, **141**) (20 giá trị mỗi bậc, C.2). Lưới cũ 36 giá trị là tập con (đã kiểm theo `lam_key`), nên chạy lại chỉ thêm 105 λ mới mỗi đường.
+- **Cột `n_fallback`:** số bước h phải lập lại A_h bằng float64 (`irls.last_fallbacks`), ghi cho mỗi dòng IRLS.
+  - `Writer` mở file đã có với **đúng header của nó** và `extrasaction="ignore"`. `lambda_path.csv` vì vậy giữ header cũ (không có cột này); file mới (`results/recheck/`) có cột.
+- **`Cell.set_train(X, Y)`:** tách phần tính x̄, ȳ, A, C (và bản NLinear) ra khỏi `__init__`, để dùng lại với train đã bỏ bớt cửa sổ (C.3). Kết quả không đổi (cùng phép tính).
+
+## 8.3. Script mới
+
+- `scripts/sgd_etth2.py`: `--step a2` (tái lập ETTh1 H = 96, seed 42) và `--step run` (ETTh2, 3 mô hình × 4 H × 3 seed). CPU. Đánh giá bằng W_eff, bias float64 trên cùng ma trận cửa sổ với nghiệm dạng đóng; kiểm số cửa sổ và kiểm chéo với forward float32.
+- `scripts/recheck_paths.py`: C.1, chạy lại ba đường MAE vào `results/recheck/`, so với `lambda_path.csv`.
+- `scripts/ridge_w0.py`: B.2, ridge co về W₀ ∈ {0, 1/L, lag cuối}.
+- `scripts/constant_windows.py`: C.3, cửa sổ hằng của ETTh2.
+- `scripts/gd_early_stop.py`: B.3, GD toàn batch lr cố định trên Linear.
+- `scripts/report_etth2.py`: lập các bảng của báo cáo.
+
+## 8.4. Sửa sau khi chạy
+
+- **`scripts/ridge_w0.py` (commit `2fdebb9`):** lần chạy đầu gọi `runner.Cell.evaluate`, hàm này tính cả phần dư trên train (n·H) cho mỗi λ. Sau gần 1 giờ mới xong 44/72 tổ hợp, chưa tới ETTm1. Đã dừng lần chạy đó.
+  - Thay bằng `evaluate` riêng: chỉ MSE, MAE của val và test, đúng biểu thức của `Cell.evaluate`. Kiểm `zero` vẫn khớp `lambda_path.csv` tới 2,2e-16.
+  - Mỗi ô ghi `results/ridge_w0/cells/{ds}_H{H}.csv` (ghi file tạm rồi đổi tên), nên chạy lại là chạy tiếp. Cả 12 ô mất khoảng 50 phút.
+- **`scripts/report_etth2.py` (commit `72d5611`):** glob `*_H*_seed*.json` bắt nhầm cả JSON của A.2. Đổi thành `*Linear_H*_seed*.json`.
+- **`.gitignore`:** thêm `results/sgd_etth2/*.npy` (32 MB) và `results/recheck/weights/` (47 MB), giống `results/weights/`. Các W này tái lập được trùng từng bit bằng script.
