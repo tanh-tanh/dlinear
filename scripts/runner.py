@@ -135,8 +135,16 @@ class Cell:
         self.Ninv = np.linalg.inv(build_N(P))
         self.pens = {"Linear": np.eye(L), "DLinear": self.Ninv, "NLinear": np.diag(np.r_[np.ones(L - 1), 0.0])}
         self._gpu = None
+        self.set_train(self.d["X"], self.d["Y"])
+
+    def set_train(self, X, Y):
+        """Đặt tập train (X, Y) và các thống kê của MSE dạng đóng. Dùng lại khi bỏ bớt cửa sổ train
+        (scripts/constant_windows.py); chỉ hợp lệ trước khi dùng GPU."""
+        assert self._gpu is None
+        self.d["X"], self.d["Y"] = X, Y
+        self.d["Xt"] = np.concatenate([X, np.ones((len(X), 1))], axis=1)
+        self.n = len(X)
         # MSE dạng đóng trên dữ liệu đã trừ trung bình
-        X, Y = self.d["X"], self.d["Y"]
         self.x_bar, self.y_bar = X.mean(0), Y.mean(0)
         Xc = X - self.x_bar
         self.A = Xc.T @ Xc
