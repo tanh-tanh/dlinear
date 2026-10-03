@@ -3,7 +3,9 @@ import unittest
 
 import torch
 
-from src.sgd import lr_factor
+import numpy as np
+
+from src.sgd import MaskedETTDataset, masked_mse, lr_factor
 
 
 def ltsf_type1_lrs(lr0, epochs):
@@ -39,6 +41,34 @@ class TestLRSchedule(unittest.TestCase):
     def test_unknown(self):
         with self.assertRaises(ValueError):
             lr_factor(0, "type9")
+
+
+class TestMaskedLoss(unittest.TestCase):
+    def test_all_kept_equals_mse(self):
+        torch.manual_seed(0)
+        p, y = torch.randn(4, 6, 3), torch.randn(4, 6, 3)
+        keep = torch.ones(4, 3, dtype=torch.bool)
+        self.assertAlmostEqual(masked_mse(p, y, keep).item(), torch.nn.MSELoss()(p, y).item(), places=6)
+
+    def test_dropped_pairs_ignored(self):
+        """Bỏ cặp (cửa sổ, kênh) = MSE trên các hàng còn lại của ma trận make_dataset."""
+        torch.manual_seed(1)
+        p, y = torch.randn(4, 6, 3, dtype=torch.float64), torch.randn(4, 6, 3, dtype=torch.float64)
+        keep = torch.tensor([[1, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 0]], dtype=torch.bool)
+        rows = [((p[b, :, c] - y[b, :, c]) ** 2).mean() for b in range(4) for c in range(3) if keep[b, c]]
+        self.assertAlmostEqual(masked_mse(p, y, keep).item(), torch.stack(rows).mean().item(), places=12)
+        y2 = y.clone()
+        y2[~keep.unsqueeze(1).expand_as(y)] = 1e6           # giá trị ở cặp bị bỏ không ảnh hưởng
+        self.assertAlmostEqual(masked_mse(p, y2, keep).item(), masked_mse(p, y, keep).item(), places=12)
+
+    def test_dataset_returns_keep(self):
+        data = np.arange(40, dtype=float).reshape(20, 2)
+        keep = np.zeros((20 - 5 - 3 + 1, 2), dtype=bool)
+        keep[3, 1] = True
+        ds = MaskedETTDataset(data, 5, 3, keep)
+        x, y, k = ds[3]
+        self.assertEqual(tuple(x.shape), (5, 2))
+        self.assertEqual(k.tolist(), [False, True])
 
 
 if __name__ == "__main__":

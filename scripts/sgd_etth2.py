@@ -3,6 +3,12 @@
     python scripts/sgd_etth2.py --step a2                          # A.2: tái lập ETTh1 H = 96, seed 42
     python scripts/sgd_etth2.py --step run                         # A.3: 3 mô hình × 4 H × 3 seed
     python scripts/sgd_etth2.py --step run --model DLinear --H 96 --seed 2021
+    python scripts/sgd_etth2.py --step run --out sgd_etth2_20seed --seed $(seq 2021 2040)      # NHIEM_VU_4 A
+    python scripts/sgd_etth2.py --step run --out sgd_etth2_filtered --filtered ...             # NHIEM_VU_4 B
+
+--filtered: "train đã lọc" của NHIEM_VU_3 C.3 (constant_windows.constant_mask). Cặp (cửa sổ, kênh) hằng bị bỏ
+khỏi hàm mất mát (MaskedETTDataset); batch, thứ tự xáo, val, test giữ nguyên. Không có --filtered thì
+code chạy y như trước.
 
 Siêu tham số (scripts/EXP-LongForecasting/Linear/etth2.sh và run_longExp.py của LTSF-Linear; README dòng 16
 và 107: Linear, NLinear, DLinear dùng chung script): lr 0,05, batch 32, 10 epoch, patience 3, lradj type1,
@@ -15,7 +21,7 @@ Khác repo gốc (ghi trong docs/BAO_CAO_ETTH2_SGD.md):
 Chạy trên CPU (như A.2). Đánh giá: W_eff, bias float64 trên cùng ma trận cửa sổ với nghiệm dạng đóng
 (load_cell), nên cùng scaler, cùng cửa sổ test.
 
-Kết quả: results/sgd_etth2/{model}_H{H}_seed{seed}.json và .npy (W [H, L + 1], bias ở cột cuối).
+Kết quả: results/<out>/{model}_H{H}_seed{seed}.json và .npy (mặc định out = sgd_etth2) (W [H, L + 1], bias ở cột cuối).
 """
 import argparse
 import sys
@@ -33,7 +39,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from bench_5060ti import load_cell, save_json                 # noqa: E402  (tắt TF32 khi import)
 from src.data import load_ett, load_etth1                      # noqa: E402
 from src.models import MODELS, DLinear, effective_weights      # noqa: E402
-from src.sgd import ETTDataset, evaluate, train_sgd            # noqa: E402
+from src.sgd import ETTDataset, MaskedETTDataset, evaluate, train_sgd  # noqa: E402
 
 L = 336
 HORIZONS = [96, 192, 336, 720]
@@ -74,9 +80,17 @@ def step_a2():
     return ok
 
 
-def run_one(name, H, seed, cell, splits):
+def train_keep(cell):
+    """keep [số cửa sổ, 7]: False ở cặp (cửa sổ, kênh) hằng, theo đúng hàm lọc của constant_windows.py."""
+    from constant_windows import constant_mask
+    mask = constant_mask(cell["X"], cell["Y"])          # hàng của make_dataset: kênh 0 hết, rồi kênh 1, ...
+    return ~mask.reshape(7, -1).T
+
+
+def run_one(name, H, seed, cell, splits, filtered=False):
     tr, va, _ = splits
-    train_ds = ETTDataset(tr, L, H)
+    keep = train_keep(cell) if filtered else None
+    train_ds = MaskedETTDataset(tr, L, H, keep) if filtered else ETTDataset(tr, L, H)
     # cùng cửa sổ với nghiệm dạng đóng: số hàng của make_dataset = số cửa sổ × 7 kênh
     assert len(train_ds) * 7 == len(cell["X"])
     assert len(ETTDataset(splits[2], L, H)) * 7 == len(cell["Y_te"])
@@ -97,7 +111,8 @@ def run_one(name, H, seed, cell, splits):
            "k": 25 if name == "DLinear" else None, **HP, "drop_last_train": True,
            "init": "nn.Linear mặc định", "best_epoch": hist[best][0], "n_epochs_run": len(hist),
            "history": [{"epoch": e, "train_loss": t, "val_mse_torch": v, "lr": lr} for e, t, v, lr in hist],
-           "seconds": sec, "n_train_batches": len(trl)}
+           "seconds": sec, "n_train_batches": len(trl), "filtered_train": filtered,
+           "n_train_pairs_dropped": int((~keep).sum()) if filtered else 0}
     for tag, split in (("train", ""), ("val", "_va"), ("test", "_te")):
         X = cell["X"] if tag == "train" else cell[f"Xt{split}"][:, :-1]
         Y = cell["Y"] if tag == "train" else cell[f"Y{split}"]
@@ -114,7 +129,7 @@ def run_one(name, H, seed, cell, splits):
           f"test MSE {res['test_mse']:.6f} MAE {res['test_mae']:.6f}, {sec:.0f} s", flush=True)
 
 
-def step_run(models, horizons, seeds, force):
+def step_run(models, horizons, seeds, force, filtered=False):
     splits = load_ett(ROOT / "data" / "ETTh2.csv", L, "ETTh2")
     for H in horizons:
         cell = load_cell("ETTh2", H)
@@ -123,7 +138,7 @@ def step_run(models, horizons, seeds, force):
                 if (OUT / f"{name}_H{H}_seed{seed}.json").exists() and not force:
                     print(f"  bỏ qua {name} H={H} seed {seed} (đã có)")
                     continue
-                run_one(name, H, seed, cell, splits)
+                run_one(name, H, seed, cell, splits, filtered)
 
 
 def main():
@@ -133,11 +148,15 @@ def main():
     ap.add_argument("--H", nargs="+", type=int, default=HORIZONS)
     ap.add_argument("--seed", nargs="+", type=int, default=SEEDS)
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--out", default="sgd_etth2", help="thư mục con của results/")
+    ap.add_argument("--filtered", action="store_true", help="train đã lọc cửa sổ hằng (NHIEM_VU_4 B)")
     args = ap.parse_args()
+    global OUT
+    OUT = ROOT / "results" / args.out
     OUT.mkdir(parents=True, exist_ok=True)
     if args.step == "a2":
         sys.exit(0 if step_a2() else 1)
-    step_run(args.model, args.H, args.seed, args.force)
+    step_run(args.model, args.H, args.seed, args.force, args.filtered)
 
 
 if __name__ == "__main__":

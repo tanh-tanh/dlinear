@@ -24,6 +24,29 @@ class ETTDataset(Dataset):
         return x, y
 
 
+class MaskedETTDataset(ETTDataset):
+    """ETTDataset kèm keep [số cửa sổ, C] (bool): cặp (cửa sổ, kênh) nào được tính vào hàm mất mát.
+
+    Dùng để huấn luyện trên "train đã lọc" mà vẫn giữ nguyên batch nhiều kênh và thứ tự xáo:
+    bỏ cặp (cửa sổ, kênh) khỏi mất mát tương đương bỏ hàng đó khỏi hồi quy dạng đóng (make_dataset).
+    """
+
+    def __init__(self, data, seq_len, pred_len, keep):
+        super().__init__(data, seq_len, pred_len)
+        self.keep = torch.as_tensor(keep, dtype=torch.bool)
+        assert self.keep.shape == (len(self), self.data.shape[1])
+
+    def __getitem__(self, i):
+        x, y = super().__getitem__(i)
+        return x, y, self.keep[i]
+
+
+def masked_mse(pred, y, keep):
+    """MSE trung bình trên các phần tử của cặp (cửa sổ, kênh) có keep = True. pred, y [B, H, C]; keep [B, C]."""
+    m = keep.unsqueeze(1).to(pred.dtype)
+    return ((pred - y) ** 2 * m).sum() / (m.sum() * pred.shape[1]).clamp(min=1)
+
+
 def evaluate(model, loader, reduction="mse"):
     """MSE hoặc MAE trung bình trên toàn bộ phần tử của loader."""
     model.eval()
@@ -39,8 +62,14 @@ def evaluate(model, loader, reduction="mse"):
 
 def train_one_epoch(model, loader, criterion, optimizer):
     train_loss = 0.0
-    for x, y in loader:
-        loss = criterion(model(x), y)
+    for batch in loader:
+        # batch 3 phần tử: (x, y, keep) của MaskedETTDataset; 2 phần tử: như cũ (không đổi kết quả)
+        if len(batch) == 3:
+            x, y, keep = batch
+            loss = masked_mse(model(x), y, keep)
+        else:
+            x, y = batch
+            loss = criterion(model(x), y)
         train_loss += loss.item() / len(loader)
         optimizer.zero_grad()
         loss.backward()
