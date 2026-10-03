@@ -344,3 +344,30 @@ Phạm vi: `docs/NHIEM_VU_3.md`. Kết quả ở [BAO_CAO_ETTH2_SGD.md](BAO_CAO_
   - Mỗi ô ghi `results/ridge_w0/cells/{ds}_H{H}.csv` (ghi file tạm rồi đổi tên), nên chạy lại là chạy tiếp. Cả 12 ô mất khoảng 50 phút.
 - **`scripts/report_etth2.py` (commit `72d5611`):** glob `*_H*_seed*.json` bắt nhầm cả JSON của A.2. Đổi thành `*Linear_H*_seed*.json`.
 - **`.gitignore`:** thêm `results/sgd_etth2/*.npy` (32 MB) và `results/recheck/weights/` (47 MB), giống `results/weights/`. Các W này tái lập được trùng từng bit bằng script.
+
+---
+
+# Nhật ký thay đổi code: nhiệm vụ 4, chốt các câu hỏi về ETTh2 (03/10/2026)
+
+Phạm vi: `docs/NHIEM_VU_4.md`. Kết quả ở [BAO_CAO_ETTH2_2.md](BAO_CAO_ETTH2_2.md).
+
+## 9.1. `src/sgd.py`: huấn luyện trên train đã lọc
+
+- **`MaskedETTDataset(data, L, H, keep)`:** như `ETTDataset`, trả thêm `keep [C]` (bool) cho mỗi cửa sổ.
+- **`masked_mse(pred, y, keep)`:** MSE trung bình trên các phần tử của cặp (cửa sổ, kênh) có `keep = True`.
+- **`train_one_epoch`:** batch 3 phần tử thì dùng `masked_mse`; batch 2 phần tử chạy đúng như cũ. Seed 2021–2023 của nhiệm vụ 3 chạy lại trùng từng bit (36/36 file W).
+- **Lý do chọn mask thay vì bỏ mẫu:** mỗi mẫu của SGD gồm cả 7 kênh, còn cửa sổ hằng tính theo từng kênh. Mask giữ nguyên batch, thứ tự xáo và khởi tạo, và tương đương bỏ đúng các hàng đó khỏi hồi quy dạng đóng.
+- **Test mới (`tests/test_sgd.py`):** giữ hết thì bằng `MSELoss`; bỏ cặp thì bằng MSE trên các hàng còn lại, và giá trị ở cặp bị bỏ không ảnh hưởng; dataset trả đúng `keep`. Test: 46 → **49, tất cả đạt**.
+
+## 9.2. `scripts/sgd_etth2.py`
+
+- **`--out`:** thư mục con của `results/` (mặc định `sgd_etth2`), để không ghi đè kết quả nhiệm vụ 3.
+- **`--filtered`:** train đã lọc theo `constant_windows.constant_mask` (hàm `train_keep`). JSON ghi thêm `filtered_train` và `n_train_pairs_dropped`.
+
+## 9.3. Script mới
+
+- **`scripts/mae_filtered.py`:** MAE λ = 0 trên train đã lọc (`Cell.set_train`), khởi tạo từ MSE λ = 0 trên cùng train, cấu hình dừng như grid. Ghi số vòng, số bước fallback, thời gian.
+- **`scripts/official_ltsf.py`:** `--prepare` chép code gốc sang `scratch/ltsf_official/` và áp `results/official_ltsf/patch.diff`; chạy code gốc, lưu log, parse MSE/MAE và epoch tốt nhất, chấm chéo checkpoint bằng pipeline của repo.
+  - **Lỗi đã sửa (commit `926efb2`):** `git apply` chạy với cwd là `scratch/ltsf_official` (thư mục con của repo này) hiểu đường dẫn theo gốc repo và **lặng lẽ bỏ qua** patch. Giờ áp từ gốc repo với `--directory=scratch/ltsf_official` và kiểm hai dấu hiệu của patch.
+- **`scripts/report_etth2_2.py`:** lập mọi bảng của báo cáo; kiểm tất định của seed 2021–2023.
+- **`.gitignore`:** thêm `scratch/`.

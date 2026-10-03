@@ -4,3 +4,5 @@ results/weights/
 results/sgd_etth2/*.npy
 results/recheck/weights/
 scratch/
+results/sgd_etth2_20seed/*.npy
+results/sgd_etth2_filtered/*.npy

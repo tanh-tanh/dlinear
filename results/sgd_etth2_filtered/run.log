@@ -1,0 +1,320 @@
+→ results\sgd_etth2_filtered\Linear_H96_seed2021.json
+  Linear H=96 seed 2021: epoch tốt nhất 7/10, val MSE 0.214784, test MSE 0.288499 MAE 0.352100, 6 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2022.json
+  Linear H=96 seed 2022: epoch tốt nhất 4/7, val MSE 0.239670, test MSE 0.337812 MAE 0.391383, 3 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2023.json
+  Linear H=96 seed 2023: epoch tốt nhất 9/10, val MSE 0.224055, test MSE 0.299095 MAE 0.364996, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2024.json
+  Linear H=96 seed 2024: epoch tốt nhất 10/10, val MSE 0.227241, test MSE 0.301947 MAE 0.366414, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2025.json
+  Linear H=96 seed 2025: epoch tốt nhất 1/4, val MSE 0.252197, test MSE 0.379000 MAE 0.416754, 2 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2026.json
+  Linear H=96 seed 2026: epoch tốt nhất 5/8, val MSE 0.216939, test MSE 0.297659 MAE 0.359571, 3 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2027.json
+  Linear H=96 seed 2027: epoch tốt nhất 6/9, val MSE 0.228229, test MSE 0.307337 MAE 0.370172, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2028.json
+  Linear H=96 seed 2028: epoch tốt nhất 6/9, val MSE 0.227852, test MSE 0.297589 MAE 0.362707, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2029.json
+  Linear H=96 seed 2029: epoch tốt nhất 10/10, val MSE 0.233874, test MSE 0.314940 MAE 0.377484, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2030.json
+  Linear H=96 seed 2030: epoch tốt nhất 9/10, val MSE 0.224322, test MSE 0.302969 MAE 0.366297, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2031.json
+  Linear H=96 seed 2031: epoch tốt nhất 4/7, val MSE 0.241958, test MSE 0.339193 MAE 0.393849, 3 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2032.json
+  Linear H=96 seed 2032: epoch tốt nhất 6/9, val MSE 0.223472, test MSE 0.288537 MAE 0.357119, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2033.json
+  Linear H=96 seed 2033: epoch tốt nhất 7/10, val MSE 0.226155, test MSE 0.302414 MAE 0.368458, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2034.json
+  Linear H=96 seed 2034: epoch tốt nhất 7/10, val MSE 0.222096, test MSE 0.295084 MAE 0.360205, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2035.json
+  Linear H=96 seed 2035: epoch tốt nhất 7/10, val MSE 0.220736, test MSE 0.308533 MAE 0.367757, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2036.json
+  Linear H=96 seed 2036: epoch tốt nhất 1/4, val MSE 0.271383, test MSE 0.402127 MAE 0.426279, 2 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2037.json
+  Linear H=96 seed 2037: epoch tốt nhất 10/10, val MSE 0.222921, test MSE 0.298150 MAE 0.363657, 5 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2038.json
+  Linear H=96 seed 2038: epoch tốt nhất 4/7, val MSE 0.244080, test MSE 0.344456 MAE 0.401389, 4 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2039.json
+  Linear H=96 seed 2039: epoch tốt nhất 7/10, val MSE 0.224693, test MSE 0.298960 MAE 0.362940, 5 s
+→ results\sgd_etth2_filtered\Linear_H96_seed2040.json
+  Linear H=96 seed 2040: epoch tốt nhất 5/8, val MSE 0.226286, test MSE 0.314894 MAE 0.376163, 4 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2021.json
+  DLinear H=96 seed 2021: epoch tốt nhất 10/10, val MSE 0.227762, test MSE 0.307823 MAE 0.371943, 8 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2022.json
+  DLinear H=96 seed 2022: epoch tốt nhất 8/10, val MSE 0.233544, test MSE 0.307573 MAE 0.372805, 8 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2023.json
+  DLinear H=96 seed 2023: epoch tốt nhất 7/10, val MSE 0.223943, test MSE 0.293681 MAE 0.358992, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2024.json
+  DLinear H=96 seed 2024: epoch tốt nhất 8/10, val MSE 0.219982, test MSE 0.296368 MAE 0.359062, 8 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2025.json
+  DLinear H=96 seed 2025: epoch tốt nhất 9/10, val MSE 0.219359, test MSE 0.281121 MAE 0.348585, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2026.json
+  DLinear H=96 seed 2026: epoch tốt nhất 8/10, val MSE 0.215640, test MSE 0.289788 MAE 0.356052, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2027.json
+  DLinear H=96 seed 2027: epoch tốt nhất 9/10, val MSE 0.227307, test MSE 0.304806 MAE 0.368877, 8 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2028.json
+  DLinear H=96 seed 2028: epoch tốt nhất 6/9, val MSE 0.227500, test MSE 0.299344 MAE 0.364464, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2029.json
+  DLinear H=96 seed 2029: epoch tốt nhất 9/10, val MSE 0.223965, test MSE 0.297331 MAE 0.363015, 8 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2030.json
+  DLinear H=96 seed 2030: epoch tốt nhất 7/10, val MSE 0.220194, test MSE 0.287841 MAE 0.353105, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2031.json
+  DLinear H=96 seed 2031: epoch tốt nhất 7/10, val MSE 0.227246, test MSE 0.295481 MAE 0.363112, 8 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2032.json
+  DLinear H=96 seed 2032: epoch tốt nhất 9/10, val MSE 0.222613, test MSE 0.298539 MAE 0.361371, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2033.json
+  DLinear H=96 seed 2033: epoch tốt nhất 8/10, val MSE 0.221877, test MSE 0.298628 MAE 0.361335, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2034.json
+  DLinear H=96 seed 2034: epoch tốt nhất 8/10, val MSE 0.224786, test MSE 0.300508 MAE 0.364262, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2035.json
+  DLinear H=96 seed 2035: epoch tốt nhất 7/10, val MSE 0.235626, test MSE 0.325211 MAE 0.386173, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2036.json
+  DLinear H=96 seed 2036: epoch tốt nhất 9/10, val MSE 0.218424, test MSE 0.293842 MAE 0.357931, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2037.json
+  DLinear H=96 seed 2037: epoch tốt nhất 9/10, val MSE 0.223759, test MSE 0.296733 MAE 0.362599, 8 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2038.json
+  DLinear H=96 seed 2038: epoch tốt nhất 6/9, val MSE 0.220523, test MSE 0.296726 MAE 0.360147, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2039.json
+  DLinear H=96 seed 2039: epoch tốt nhất 6/9, val MSE 0.218491, test MSE 0.299765 MAE 0.362653, 7 s
+→ results\sgd_etth2_filtered\DLinear_H96_seed2040.json
+  DLinear H=96 seed 2040: epoch tốt nhất 9/10, val MSE 0.225157, test MSE 0.306409 MAE 0.369954, 8 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2021.json
+  Linear H=192 seed 2021: epoch tốt nhất 1/4, val MSE 0.327814, test MSE 0.484533 MAE 0.476080, 2 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2022.json
+  Linear H=192 seed 2022: epoch tốt nhất 8/10, val MSE 0.305706, test MSE 0.402721 MAE 0.430787, 5 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2023.json
+  Linear H=192 seed 2023: epoch tốt nhất 8/10, val MSE 0.293652, test MSE 0.367049 MAE 0.407002, 5 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2024.json
+  Linear H=192 seed 2024: epoch tốt nhất 7/10, val MSE 0.298629, test MSE 0.384681 MAE 0.420232, 4 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2025.json
+  Linear H=192 seed 2025: epoch tốt nhất 6/9, val MSE 0.284562, test MSE 0.355967 MAE 0.396374, 4 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2026.json
+  Linear H=192 seed 2026: epoch tốt nhất 8/10, val MSE 0.304820, test MSE 0.393954 MAE 0.425450, 5 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2027.json
+  Linear H=192 seed 2027: epoch tốt nhất 8/10, val MSE 0.296888, test MSE 0.374268 MAE 0.413068, 5 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2028.json
+  Linear H=192 seed 2028: epoch tốt nhất 4/7, val MSE 0.302870, test MSE 0.387532 MAE 0.420737, 3 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2029.json
+  Linear H=192 seed 2029: epoch tốt nhất 6/9, val MSE 0.302728, test MSE 0.365756 MAE 0.406930, 4 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2030.json
+  Linear H=192 seed 2030: epoch tốt nhất 3/6, val MSE 0.322339, test MSE 0.493789 MAE 0.478926, 3 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2031.json
+  Linear H=192 seed 2031: epoch tốt nhất 9/10, val MSE 0.301034, test MSE 0.383957 MAE 0.415748, 5 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2032.json
+  Linear H=192 seed 2032: epoch tốt nhất 9/10, val MSE 0.293595, test MSE 0.372569 MAE 0.410259, 5 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2033.json
+  Linear H=192 seed 2033: epoch tốt nhất 6/9, val MSE 0.287013, test MSE 0.369167 MAE 0.407019, 4 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2034.json
+  Linear H=192 seed 2034: epoch tốt nhất 7/10, val MSE 0.295701, test MSE 0.374636 MAE 0.410357, 5 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2035.json
+  Linear H=192 seed 2035: epoch tốt nhất 6/9, val MSE 0.292466, test MSE 0.392495 MAE 0.420968, 4 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2036.json
+  Linear H=192 seed 2036: epoch tốt nhất 6/9, val MSE 0.304887, test MSE 0.387848 MAE 0.423442, 4 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2037.json
+  Linear H=192 seed 2037: epoch tốt nhất 4/7, val MSE 0.312772, test MSE 0.438897 MAE 0.446841, 3 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2038.json
+  Linear H=192 seed 2038: epoch tốt nhất 5/8, val MSE 0.294022, test MSE 0.350001 MAE 0.398069, 4 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2039.json
+  Linear H=192 seed 2039: epoch tốt nhất 1/4, val MSE 0.369630, test MSE 0.509343 MAE 0.488696, 2 s
+→ results\sgd_etth2_filtered\Linear_H192_seed2040.json
+  Linear H=192 seed 2040: epoch tốt nhất 9/10, val MSE 0.294641, test MSE 0.373385 MAE 0.412722, 5 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2021.json
+  DLinear H=192 seed 2021: epoch tốt nhất 8/10, val MSE 0.312797, test MSE 0.398786 MAE 0.427891, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2022.json
+  DLinear H=192 seed 2022: epoch tốt nhất 10/10, val MSE 0.296110, test MSE 0.367069 MAE 0.407808, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2023.json
+  DLinear H=192 seed 2023: epoch tốt nhất 6/9, val MSE 0.302490, test MSE 0.376568 MAE 0.414819, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2024.json
+  DLinear H=192 seed 2024: epoch tốt nhất 7/10, val MSE 0.297087, test MSE 0.374683 MAE 0.414822, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2025.json
+  DLinear H=192 seed 2025: epoch tốt nhất 10/10, val MSE 0.304622, test MSE 0.387323 MAE 0.422616, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2026.json
+  DLinear H=192 seed 2026: epoch tốt nhất 7/10, val MSE 0.298440, test MSE 0.382953 MAE 0.419797, 9 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2027.json
+  DLinear H=192 seed 2027: epoch tốt nhất 9/10, val MSE 0.301200, test MSE 0.382456 MAE 0.418014, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2028.json
+  DLinear H=192 seed 2028: epoch tốt nhất 9/10, val MSE 0.301381, test MSE 0.387338 MAE 0.422028, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2029.json
+  DLinear H=192 seed 2029: epoch tốt nhất 9/10, val MSE 0.306846, test MSE 0.382496 MAE 0.419128, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2030.json
+  DLinear H=192 seed 2030: epoch tốt nhất 8/10, val MSE 0.296979, test MSE 0.361553 MAE 0.405002, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2031.json
+  DLinear H=192 seed 2031: epoch tốt nhất 8/10, val MSE 0.288706, test MSE 0.355830 MAE 0.396893, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2032.json
+  DLinear H=192 seed 2032: epoch tốt nhất 8/10, val MSE 0.302852, test MSE 0.378286 MAE 0.414342, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2033.json
+  DLinear H=192 seed 2033: epoch tốt nhất 6/9, val MSE 0.301236, test MSE 0.344722 MAE 0.393479, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2034.json
+  DLinear H=192 seed 2034: epoch tốt nhất 6/9, val MSE 0.317998, test MSE 0.450019 MAE 0.458351, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2035.json
+  DLinear H=192 seed 2035: epoch tốt nhất 5/8, val MSE 0.306038, test MSE 0.379707 MAE 0.419671, 7 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2036.json
+  DLinear H=192 seed 2036: epoch tốt nhất 10/10, val MSE 0.308848, test MSE 0.400986 MAE 0.432491, 10 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2037.json
+  DLinear H=192 seed 2037: epoch tốt nhất 7/10, val MSE 0.299509, test MSE 0.364505 MAE 0.406286, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2038.json
+  DLinear H=192 seed 2038: epoch tốt nhất 10/10, val MSE 0.302921, test MSE 0.384556 MAE 0.419976, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2039.json
+  DLinear H=192 seed 2039: epoch tốt nhất 6/9, val MSE 0.300352, test MSE 0.377681 MAE 0.413084, 8 s
+→ results\sgd_etth2_filtered\DLinear_H192_seed2040.json
+  DLinear H=192 seed 2040: epoch tốt nhất 5/8, val MSE 0.305248, test MSE 0.390038 MAE 0.420215, 7 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2021.json
+  Linear H=336 seed 2021: epoch tốt nhất 8/10, val MSE 0.390424, test MSE 0.424253 MAE 0.448540, 6 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2022.json
+  Linear H=336 seed 2022: epoch tốt nhất 5/8, val MSE 0.381857, test MSE 0.398700 MAE 0.430209, 4 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2023.json
+  Linear H=336 seed 2023: epoch tốt nhất 1/4, val MSE 0.436241, test MSE 0.536916 MAE 0.516872, 2 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2024.json
+  Linear H=336 seed 2024: epoch tốt nhất 4/7, val MSE 0.394382, test MSE 0.434399 MAE 0.458149, 4 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2025.json
+  Linear H=336 seed 2025: epoch tốt nhất 10/10, val MSE 0.399367, test MSE 0.442617 MAE 0.461182, 6 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2026.json
+  Linear H=336 seed 2026: epoch tốt nhất 6/9, val MSE 0.384301, test MSE 0.419499 MAE 0.445603, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2027.json
+  Linear H=336 seed 2027: epoch tốt nhất 6/9, val MSE 0.401954, test MSE 0.458201 MAE 0.471845, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2028.json
+  Linear H=336 seed 2028: epoch tốt nhất 7/10, val MSE 0.397667, test MSE 0.449088 MAE 0.463776, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2029.json
+  Linear H=336 seed 2029: epoch tốt nhất 8/10, val MSE 0.394032, test MSE 0.460781 MAE 0.469624, 6 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2030.json
+  Linear H=336 seed 2030: epoch tốt nhất 6/9, val MSE 0.380549, test MSE 0.389899 MAE 0.426686, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2031.json
+  Linear H=336 seed 2031: epoch tốt nhất 7/10, val MSE 0.382637, test MSE 0.407775 MAE 0.437640, 6 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2032.json
+  Linear H=336 seed 2032: epoch tốt nhất 5/8, val MSE 0.388152, test MSE 0.458060 MAE 0.466382, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2033.json
+  Linear H=336 seed 2033: epoch tốt nhất 6/9, val MSE 0.394766, test MSE 0.458548 MAE 0.466490, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2034.json
+  Linear H=336 seed 2034: epoch tốt nhất 1/4, val MSE 0.453104, test MSE 0.570996 MAE 0.526702, 2 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2035.json
+  Linear H=336 seed 2035: epoch tốt nhất 8/10, val MSE 0.393889, test MSE 0.437811 MAE 0.458024, 6 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2036.json
+  Linear H=336 seed 2036: epoch tốt nhất 5/8, val MSE 0.401148, test MSE 0.434757 MAE 0.454089, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2037.json
+  Linear H=336 seed 2037: epoch tốt nhất 7/10, val MSE 0.390202, test MSE 0.432339 MAE 0.453002, 6 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2038.json
+  Linear H=336 seed 2038: epoch tốt nhất 5/8, val MSE 0.390382, test MSE 0.456415 MAE 0.461674, 5 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2039.json
+  Linear H=336 seed 2039: epoch tốt nhất 7/10, val MSE 0.393068, test MSE 0.410722 MAE 0.440592, 6 s
+→ results\sgd_etth2_filtered\Linear_H336_seed2040.json
+  Linear H=336 seed 2040: epoch tốt nhất 4/7, val MSE 0.388479, test MSE 0.474825 MAE 0.476941, 4 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2021.json
+  DLinear H=336 seed 2021: epoch tốt nhất 10/10, val MSE 0.393059, test MSE 0.427170 MAE 0.451673, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2022.json
+  DLinear H=336 seed 2022: epoch tốt nhất 7/10, val MSE 0.390639, test MSE 0.419645 MAE 0.444597, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2023.json
+  DLinear H=336 seed 2023: epoch tốt nhất 6/9, val MSE 0.394043, test MSE 0.443074 MAE 0.462134, 9 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2024.json
+  DLinear H=336 seed 2024: epoch tốt nhất 6/9, val MSE 0.387486, test MSE 0.405136 MAE 0.437087, 9 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2025.json
+  DLinear H=336 seed 2025: epoch tốt nhất 9/10, val MSE 0.392483, test MSE 0.435552 MAE 0.456436, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2026.json
+  DLinear H=336 seed 2026: epoch tốt nhất 4/7, val MSE 0.420588, test MSE 0.478589 MAE 0.481816, 7 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2027.json
+  DLinear H=336 seed 2027: epoch tốt nhất 9/10, val MSE 0.389788, test MSE 0.430848 MAE 0.450399, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2028.json
+  DLinear H=336 seed 2028: epoch tốt nhất 5/8, val MSE 0.400616, test MSE 0.429262 MAE 0.453535, 8 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2029.json
+  DLinear H=336 seed 2029: epoch tốt nhất 8/10, val MSE 0.384861, test MSE 0.401618 MAE 0.436252, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2030.json
+  DLinear H=336 seed 2030: epoch tốt nhất 6/9, val MSE 0.382563, test MSE 0.420120 MAE 0.444643, 9 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2031.json
+  DLinear H=336 seed 2031: epoch tốt nhất 6/9, val MSE 0.394501, test MSE 0.428165 MAE 0.449538, 9 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2032.json
+  DLinear H=336 seed 2032: epoch tốt nhất 8/10, val MSE 0.381798, test MSE 0.423543 MAE 0.444569, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2033.json
+  DLinear H=336 seed 2033: epoch tốt nhất 8/10, val MSE 0.389138, test MSE 0.410486 MAE 0.440601, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2034.json
+  DLinear H=336 seed 2034: epoch tốt nhất 5/8, val MSE 0.402170, test MSE 0.391772 MAE 0.429141, 8 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2035.json
+  DLinear H=336 seed 2035: epoch tốt nhất 6/9, val MSE 0.402771, test MSE 0.479766 MAE 0.478651, 9 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2036.json
+  DLinear H=336 seed 2036: epoch tốt nhất 7/10, val MSE 0.387477, test MSE 0.423579 MAE 0.448092, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2037.json
+  DLinear H=336 seed 2037: epoch tốt nhất 6/9, val MSE 0.392429, test MSE 0.434223 MAE 0.452894, 9 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2038.json
+  DLinear H=336 seed 2038: epoch tốt nhất 7/10, val MSE 0.400512, test MSE 0.466568 MAE 0.468638, 10 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2039.json
+  DLinear H=336 seed 2039: epoch tốt nhất 7/10, val MSE 0.408303, test MSE 0.452009 MAE 0.465566, 11 s
+→ results\sgd_etth2_filtered\DLinear_H336_seed2040.json
+  DLinear H=336 seed 2040: epoch tốt nhất 7/10, val MSE 0.397962, test MSE 0.425261 MAE 0.447538, 10 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2021.json
+  Linear H=720 seed 2021: epoch tốt nhất 4/7, val MSE 0.643653, test MSE 0.457633 MAE 0.483895, 5 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2022.json
+  Linear H=720 seed 2022: epoch tốt nhất 4/7, val MSE 0.638762, test MSE 0.618889 MAE 0.554002, 6 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2023.json
+  Linear H=720 seed 2023: epoch tốt nhất 5/8, val MSE 0.641905, test MSE 0.639688 MAE 0.569522, 7 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2024.json
+  Linear H=720 seed 2024: epoch tốt nhất 7/10, val MSE 0.636483, test MSE 0.567664 MAE 0.536777, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2025.json
+  Linear H=720 seed 2025: epoch tốt nhất 7/10, val MSE 0.635775, test MSE 0.599384 MAE 0.548053, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2026.json
+  Linear H=720 seed 2026: epoch tốt nhất 4/7, val MSE 0.662337, test MSE 0.520170 MAE 0.514761, 6 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2027.json
+  Linear H=720 seed 2027: epoch tốt nhất 7/10, val MSE 0.638129, test MSE 0.584156 MAE 0.549549, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2028.json
+  Linear H=720 seed 2028: epoch tốt nhất 7/10, val MSE 0.637022, test MSE 0.596510 MAE 0.555489, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2029.json
+  Linear H=720 seed 2029: epoch tốt nhất 4/7, val MSE 0.653560, test MSE 0.680950 MAE 0.587603, 6 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2030.json
+  Linear H=720 seed 2030: epoch tốt nhất 5/8, val MSE 0.653613, test MSE 0.506490 MAE 0.508101, 7 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2031.json
+  Linear H=720 seed 2031: epoch tốt nhất 6/9, val MSE 0.647441, test MSE 0.622691 MAE 0.563208, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2032.json
+  Linear H=720 seed 2032: epoch tốt nhất 9/10, val MSE 0.651069, test MSE 0.637331 MAE 0.568043, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2033.json
+  Linear H=720 seed 2033: epoch tốt nhất 6/9, val MSE 0.629440, test MSE 0.568941 MAE 0.543086, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2034.json
+  Linear H=720 seed 2034: epoch tốt nhất 7/10, val MSE 0.641417, test MSE 0.652361 MAE 0.572492, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2035.json
+  Linear H=720 seed 2035: epoch tốt nhất 4/7, val MSE 0.648844, test MSE 0.715265 MAE 0.600660, 6 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2036.json
+  Linear H=720 seed 2036: epoch tốt nhất 4/7, val MSE 0.624437, test MSE 0.547151 MAE 0.518376, 6 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2037.json
+  Linear H=720 seed 2037: epoch tốt nhất 10/10, val MSE 0.646898, test MSE 0.611461 MAE 0.558431, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2038.json
+  Linear H=720 seed 2038: epoch tốt nhất 7/10, val MSE 0.642272, test MSE 0.644287 MAE 0.568011, 8 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2039.json
+  Linear H=720 seed 2039: epoch tốt nhất 3/6, val MSE 0.654589, test MSE 0.536324 MAE 0.512007, 5 s
+→ results\sgd_etth2_filtered\Linear_H720_seed2040.json
+  Linear H=720 seed 2040: epoch tốt nhất 3/6, val MSE 0.674049, test MSE 0.722144 MAE 0.599300, 5 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2021.json
+  DLinear H=720 seed 2021: epoch tốt nhất 10/10, val MSE 0.655024, test MSE 0.641794 MAE 0.573007, 15 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2022.json
+  DLinear H=720 seed 2022: epoch tốt nhất 9/10, val MSE 0.647324, test MSE 0.605650 MAE 0.556249, 15 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2023.json
+  DLinear H=720 seed 2023: epoch tốt nhất 6/9, val MSE 0.635639, test MSE 0.616862 MAE 0.554603, 12 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2024.json
+  DLinear H=720 seed 2024: epoch tốt nhất 9/10, val MSE 0.644090, test MSE 0.597022 MAE 0.552549, 16 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2025.json
+  DLinear H=720 seed 2025: epoch tốt nhất 9/10, val MSE 0.649258, test MSE 0.611461 MAE 0.559054, 15 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2026.json
+  DLinear H=720 seed 2026: epoch tốt nhất 5/8, val MSE 0.649416, test MSE 0.570555 MAE 0.537864, 12 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2027.json
+  DLinear H=720 seed 2027: epoch tốt nhất 5/8, val MSE 0.654808, test MSE 0.712639 MAE 0.603895, 12 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2028.json
+  DLinear H=720 seed 2028: epoch tốt nhất 7/10, val MSE 0.638300, test MSE 0.592682 MAE 0.549732, 15 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2029.json
+  DLinear H=720 seed 2029: epoch tốt nhất 9/10, val MSE 0.651647, test MSE 0.658983 MAE 0.577768, 15 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2030.json
+  DLinear H=720 seed 2030: epoch tốt nhất 10/10, val MSE 0.652077, test MSE 0.630379 MAE 0.565346, 15 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2031.json
+  DLinear H=720 seed 2031: epoch tốt nhất 8/10, val MSE 0.656467, test MSE 0.640055 MAE 0.569641, 15 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2032.json
+  DLinear H=720 seed 2032: epoch tốt nhất 5/8, val MSE 0.654506, test MSE 0.639673 MAE 0.568408, 11 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2033.json
+  DLinear H=720 seed 2033: epoch tốt nhất 9/10, val MSE 0.646311, test MSE 0.615784 MAE 0.561949, 13 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2034.json
+  DLinear H=720 seed 2034: epoch tốt nhất 6/9, val MSE 0.652024, test MSE 0.544894 MAE 0.530639, 11 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2035.json
+  DLinear H=720 seed 2035: epoch tốt nhất 10/10, val MSE 0.645505, test MSE 0.607756 MAE 0.557386, 13 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2036.json
+  DLinear H=720 seed 2036: epoch tốt nhất 10/10, val MSE 0.652805, test MSE 0.629006 MAE 0.565832, 13 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2037.json
+  DLinear H=720 seed 2037: epoch tốt nhất 5/8, val MSE 0.639007, test MSE 0.548802 MAE 0.525983, 10 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2038.json
+  DLinear H=720 seed 2038: epoch tốt nhất 5/8, val MSE 0.630781, test MSE 0.528075 MAE 0.522535, 10 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2039.json
+  DLinear H=720 seed 2039: epoch tốt nhất 7/10, val MSE 0.643430, test MSE 0.591580 MAE 0.550458, 14 s
+→ results\sgd_etth2_filtered\DLinear_H720_seed2040.json
+  DLinear H=720 seed 2040: epoch tốt nhất 8/10, val MSE 0.649896, test MSE 0.633690 MAE 0.563722, 13 s

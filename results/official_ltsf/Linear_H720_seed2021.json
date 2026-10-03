@@ -1,0 +1,123 @@
+{
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "gpu_mem_gib": 15.90179443359375,
+  "compute_capability": "12.0",
+  "torch": "2.14.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 92400,
+  "driver": "616.92",
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.5",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "float32_matmul_precision": "highest"
+ },
+ "git_commit": "926efb2c953d",
+ "date": "2026-10-03 09:05:51",
+ "epochs": [
+  {
+   "epoch": 1,
+   "vali_loss": 0.7474142,
+   "test_loss": 0.9555795
+  },
+  {
+   "epoch": 2,
+   "vali_loss": 0.9004526,
+   "test_loss": 1.5532703
+  },
+  {
+   "epoch": 3,
+   "vali_loss": 0.771674,
+   "test_loss": 1.2082056
+  },
+  {
+   "epoch": 4,
+   "vali_loss": 0.7099368,
+   "test_loss": 0.8788298
+  },
+  {
+   "epoch": 5,
+   "vali_loss": 0.7519909,
+   "test_loss": 1.0562614
+  },
+  {
+   "epoch": 6,
+   "vali_loss": 0.6942125,
+   "test_loss": 0.7846028
+  },
+  {
+   "epoch": 7,
+   "vali_loss": 0.6637278,
+   "test_loss": 0.7307978
+  },
+  {
+   "epoch": 8,
+   "vali_loss": 0.6805538,
+   "test_loss": 0.802578
+  },
+  {
+   "epoch": 9,
+   "vali_loss": 0.670898,
+   "test_loss": 0.7891581
+  },
+  {
+   "epoch": 10,
+   "vali_loss": 0.6585327,
+   "test_loss": 0.7005269
+  }
+ ],
+ "best_epoch": 10,
+ "n_epochs_run": 10,
+ "official_test_mse": 0.699508547782898,
+ "official_test_mae": 0.5949932932853699,
+ "repo_val_mse": 0.6588063076444942,
+ "repo_val_mae": 0.5617782660606007,
+ "repo_test_mse": 0.699508566967823,
+ "repo_test_mae": 0.5949933459594093,
+ "model": "Linear",
+ "H": 720,
+ "seed": 2021,
+ "seconds": 15.212722100011888,
+ "command": [
+  "python",
+  "-u",
+  "run_longExp.py",
+  "--is_training",
+  "1",
+  "--root_path",
+  "./dataset/",
+  "--data_path",
+  "ETTh2.csv",
+  "--model_id",
+  "ETTh2_336_720",
+  "--model",
+  "Linear",
+  "--data",
+  "ETTh2",
+  "--features",
+  "M",
+  "--seq_len",
+  "336",
+  "--pred_len",
+  "720",
+  "--enc_in",
+  "7",
+  "--des",
+  "Exp",
+  "--itr",
+  "1",
+  "--batch_size",
+  "32",
+  "--learning_rate",
+  "0.05",
+  "--num_workers",
+  "0",
+  "--seed",
+  "2021"
+ ],
+ "ltsf_commit": "0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6",
+ "patch": "diff --git a/run_longExp.py b/run_longExp.py\nindex d672f96..fe3a360 100644\n--- a/run_longExp.py\n+++ b/run_longExp.py\n@@ -78,9 +78,16 @@ parser.add_argument('--gpu', type=int, default=0, help='gpu')\n parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)\n parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')\n parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')\n+parser.add_argument('--seed', type=int, default=2021, help='random seed (patch: replaces hard-coded fix_seed)')\n \n args = parser.parse_args()\n \n+# patch: seed from the command line; default 2021 gives the original behaviour (nothing above uses the RNG)\n+fix_seed = args.seed\n+random.seed(fix_seed)\n+torch.manual_seed(fix_seed)\n+np.random.seed(fix_seed)\n+\n args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False\n \n if args.use_gpu and args.use_multi_gpu:\ndiff --git a/utils/tools.py b/utils/tools.py\nindex 9f48a6c..8697d93 100644\n--- a/utils/tools.py\n+++ b/utils/tools.py\n@@ -37,7 +37,7 @@ class EarlyStopping:\n         self.counter = 0\n         self.best_score = None\n         self.early_stop = False\n-        self.val_loss_min = np.Inf\n+        self.val_loss_min = np.inf\n         self.delta = delta\n \n     def __call__(self, val_loss, model, path):\n",
+ "device": "cuda"
+}

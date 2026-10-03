@@ -1,0 +1,16 @@
+→ results\mae_filtered\Linear_H96.json
+  Linear H=96: 462 vòng, 70 s, fallback 0; test MSE MSE-λ0 0.315147 → MAE-λ0 0.287364
+→ results\mae_filtered\Linear_H192.json
+  Linear H=192: 473 vòng, 140 s, fallback 0; test MSE MSE-λ0 0.395778 → MAE-λ0 0.366772
+→ results\mae_filtered\Linear_H336.json
+  Linear H=336: 453 vòng, 253 s, fallback 0; test MSE MSE-λ0 0.455668 → MAE-λ0 0.420888
+→ results\mae_filtered\Linear_H720.json
+  Linear H=720: 476 vòng, 543 s, fallback 0; test MSE MSE-λ0 0.646341 → MAE-λ0 0.556390
+→ results\mae_filtered\NLinear_H96.json
+  NLinear H=96: 487 vòng, 73 s, fallback 0; test MSE MSE-λ0 0.272433 → MAE-λ0 0.275485
+→ results\mae_filtered\NLinear_H192.json
+  NLinear H=192: 473 vòng, 140 s, fallback 0; test MSE MSE-λ0 0.332395 → MAE-λ0 0.342399
+→ results\mae_filtered\NLinear_H336.json
+  NLinear H=336: 442 vòng, 250 s, fallback 0; test MSE MSE-λ0 0.356244 → MAE-λ0 0.373079
+→ results\mae_filtered\NLinear_H720.json
+  NLinear H=720: 459 vòng, 526 s, fallback 0; test MSE MSE-λ0 0.391486 → MAE-λ0 0.392090

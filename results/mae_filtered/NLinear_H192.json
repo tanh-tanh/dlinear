@@ -1,0 +1,53 @@
+{
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "gpu_mem_gib": 15.90179443359375,
+  "compute_capability": "12.0",
+  "torch": "2.14.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 92400,
+  "driver": "616.92",
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "3.13.5",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "tf32_matmul": false,
+  "tf32_cudnn": false,
+  "float32_matmul_precision": "highest"
+ },
+ "git_commit": "46526c3efbe0",
+ "date": "2026-10-03 08:50:34",
+ "dataset": "ETTh2",
+ "H": 192,
+ "model": "NLinear",
+ "lam": 0.0,
+ "objective": "MAE",
+ "delta": 1e-06,
+ "filtered_train": true,
+ "n_train_rows": 53869,
+ "n_dropped": 2922,
+ "init": "MSE λ = 0 trên train đã lọc",
+ "tol": 3e-11,
+ "patience": 1,
+ "chunk": 16,
+ "gram_dtype": "float32",
+ "n_iter": 473,
+ "converged": true,
+ "n_fallback": 0,
+ "seconds": 140.33809119999933,
+ "mae": {
+  "train_obj": 0.39062069784597175,
+  "val_mse": 0.26877693203528286,
+  "val_mae": 0.3519349939955084,
+  "val_huber": 0.12218510846132327,
+  "test_mse": 0.3423988571591917,
+  "test_mae": 0.3754854651282935
+ },
+ "mse_lam0": {
+  "train_obj": 0.466766458347689,
+  "val_mse": 0.2753439518566883,
+  "val_mae": 0.36188123042389997,
+  "val_huber": 0.12581398809564037,
+  "test_mse": 0.3323947705667108,
+  "test_mae": 0.37597234773512406
+ }
+}
