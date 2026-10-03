@@ -14,8 +14,8 @@
   "tf32_cudnn": false,
   "float32_matmul_precision": "highest"
  },
- "git_commit": "926efb2c953d",
- "date": "2026-10-03 09:10:10",
+ "git_commit": "a9c146edf710",
+ "date": "2026-10-03 09:17:22",
  "determinism": {
   "n_files": 36,
   "n_bit_identical": 36
@@ -1823,7 +1823,10 @@
     "official_sd": 0.02188384590196979,
     "n": 5,
     "repo_mean": 0.45286657225945204,
-    "pub": 0.448
+    "pub": 0.448,
+    "repo_minus_official": -0.012006932379219848,
+    "welch_halfwidth": 0.02669439047261358,
+    "welch_df": 6.680944332336027
    },
    {
     "model": "Linear",
@@ -1832,7 +1835,10 @@
     "official_sd": 0.04894148131651221,
     "n": 5,
     "repo_mean": 0.44958984932147555,
-    "pub": 0.452
+    "pub": 0.452,
+    "repo_minus_official": -0.03358068981922574,
+    "welch_halfwidth": 0.059953029060626814,
+    "welch_df": 4.495115683109441
    },
    {
     "model": "DLinear",
@@ -1841,7 +1847,10 @@
     "official_sd": 0.06992072419276711,
     "n": 5,
     "repo_mean": 0.6869125267213974,
-    "pub": 0.605
+    "pub": 0.605,
+    "repo_minus_official": 0.02137971126500693,
+    "welch_halfwidth": 0.08485075023695264,
+    "welch_df": 5.525932646339282
    },
    {
     "model": "Linear",
@@ -1850,7 +1859,10 @@
     "official_sd": 0.0418247142707029,
     "n": 5,
     "repo_mean": 0.6966741368361478,
-    "pub": 0.698
+    "pub": 0.698,
+    "repo_minus_official": 0.006469683367825052,
+    "welch_halfwidth": 0.05115229847602191,
+    "welch_df": 6.95618189400527
    }
   ]
  }

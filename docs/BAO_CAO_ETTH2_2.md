@@ -22,13 +22,14 @@ Ký hiệu: "dạng đóng" là nghiệm MSE ở λ* (chọn theo val MSE trên 
 
 - **Tiêu chí:** CI 95% của Δ (MSE test) nằm hẳn dưới 0 ở ít nhất 3/4 ô, giữ cả seed hỏng.
   - **DLinear đạt 4/4 ô.** Δ từ −0,010 (H = 96) đến −0,053 (H = 720); SGD tốt hơn λ* ở 15–19/20 seed.
-  - **Linear đạt 2/4 ô** (H = 336: −0,036 [−0,047; −0,025]; H = 720: −0,044 [−0,066; −0,021]). Ở H = 96 và 192, mỗi ô có 4 seed hỏng làm CI vắt qua 0. Bỏ các seed hỏng thì Linear đạt 4/4.
+  - **Linear đạt 2/4 ô** (H = 336: −0,036 [−0,047; −0,025]; H = 720: −0,044 [−0,066; −0,021]). Ở H = 96 và 192, mỗi ô có 4 seed hỏng làm CI vắt qua 0.
+  - Bỏ các seed hỏng thì Linear đạt 4/4. Nhưng phép bỏ này dùng MSE test (trung vị + 3·MAD trên test), tức **có dùng thông tin test**. Nó chỉ để tham khảo, như nhiệm vụ yêu cầu báo cáo, không phải một kết quả.
 - **Khoảng cách có trên cả val:** CI của Δ val nằm dưới 0 ở 7/8 ô Linear/DLinear. Nó không chỉ do dịch chuyển phân phối giữa val và test.
 - **NLinear (đối chứng) đi ngược lại:** SGD kém dạng đóng ở cả 4 ô, CI nằm hẳn trên 0.
 - **Theo tiêu chí cũ (2 sd), không ô nào đạt.** Tiêu chí cũ hỏi "một lần chạy SGD có chắc chắn tốt hơn không"; câu hỏi ở đây là về trung bình, và sd theo seed không co lại khi thêm seed. Vì vậy tiêu chí đổi sang CI của trung bình (mục 2).
 - **20 seed khác hẳn 3 seed ở DLinear H = 720:** trung bình 0,687 ± 0,059, so với 0,736 ± 0,018 ở nhiệm vụ 3. Ba seed đầu (2021–2023) tình cờ đều nằm ở đuôi trên.
 
-**B. Đoạn hằng không giải thích được khoảng cách: SGD cũng hưởng lợi gần như ngang khi lọc.**
+**B. Đoạn hằng không giải thích được khoảng cách: ở 3/4 ô có H ≥ 336, SGD cũng hưởng lợi khi lọc và khoảng cách vẫn âm.**
 
 - **Tiêu chí B.4 ở H ∈ {336, 720}** chỉ đạt ở **Linear H = 336**. Ở đó SGD không đổi khi lọc (Δ_SGD = −0,002 [−0,017; 0,013]) trong khi dạng đóng giảm 0,030, và khoảng cách trên train đã lọc còn −0,008 [−0,028; 0,013].
 - **Ba ô còn lại không đạt:**
@@ -37,7 +38,7 @@ Ký hiệu: "dạng đóng" là nghiệm MSE ở λ* (chọn theo val MSE trên 
 - **Phần dư trên chính các cửa sổ hằng (B.3) cũng không ủng hộ cơ chế "dạng đóng khớp đúng đoạn kẹt".**
   - Trên các cửa sổ có đích hằng, SGD khớp **tốt hơn** dạng đóng (tỷ lệ MSE phần dư SGD/dạng đóng 0,60–0,93).
   - Trên các cửa sổ chỉ có đầu vào hằng, dạng đóng khớp tốt hơn 4–11%. Mức này chỉ nhỉnh hơn chút so với 1–5% trên các cửa sổ bình thường, vốn là điều tất nhiên vì dạng đóng là nghiệm tối ưu trên train.
-- **Kết luận:** đoạn hằng làm hại cả hai cách huấn luyện ở H = 720 (cả hai giảm khoảng 0,08–0,095 khi lọc). Khoảng cách SGD − dạng đóng phải đến từ chỗ khác.
+- **Kết luận:** đoạn hằng làm hại cả hai cách huấn luyện ở H = 720 (cả hai giảm 0,08–0,095 khi lọc), và làm hại SGD ít hơn dạng đóng ở H = 336. Phần lớn khoảng cách SGD − dạng đóng phải đến từ chỗ khác.
 
 **C. Khoảng một nửa lợi của MAE với Linear ở H ≥ 336 đến từ đoạn hằng; nửa còn lại thì không.**
 
@@ -45,13 +46,13 @@ Ký hiệu: "dạng đóng" là nghiệm MSE ở λ* (chọn theo val MSE trên 
 - **Chỉ H = 336 co dưới một nửa**, nên không đạt mức "co lại mạnh" ở cả hai horizon. MAE đang sửa cả đoạn kẹt lẫn một vấn đề khác.
 - **MAE trên train đủ vẫn tốt hơn MSE ở λ* trên train đã lọc** ở cả 4 H của Linear. Ví dụ H = 720: 0,590 so với 0,646.
 - **NLinear:** MAE không có lợi trên cả train đủ lẫn train đã lọc (lợi âm, −0,001 đến −0,019). Phần trăm trong bảng của NLinear vì vậy không có ý nghĩa.
-- **Phụ:** trên train đã lọc, IRLS ở cả 8 ô (kể cả NLinear H = 720) cần **0 bước fallback**. Trên train đủ, đường λ của NLinear H = 720 từng cần 26 713 bước. Điều này khớp với giải thích ở mục 8.1 của `BAO_CAO_TIEU_CHI_DUNG.md`: các hệ A_h quá xấu điều kiện đến từ đoạn hằng.
+- **Phụ:** trên train đã lọc, IRLS ở λ = 0 cần **0 bước fallback** ở cả 8 ô. Chỉ ô NLinear H = 720 có thông tin: đường λ của nó trên train đủ từng cần 26 713 bước, nhưng số bước riêng ở λ = 0 trên train đủ không được ghi. Kiểm lại ở C.1 của nhiệm vụ 3 đã cho 0 bước trên train đủ ở ETTh2 H = 336 (Linear, NLinear). Vì vậy đây chỉ là dấu hiệu phù hợp với giải thích ở mục 8.1 của `BAO_CAO_TIEU_CHI_DUNG.md`, chưa phải phép kiểm.
 
 **D. Số 0,605 nằm trong độ phân tán theo seed của chính code gốc; seed mặc định 2021 không cho ra nó.**
 
 - **Code gốc, seed 2021, DLinear H = 720:** **0,7328 / 0,6057** (MSE/MAE test). Không nằm trong 0,605 ± 2%, nên không phải điểm dừng.
 - **Năm seed 2021–2025 của code gốc** cho 0,575–0,733, trung bình 0,666 ± 0,070. Seed 2025 cho 0,6083, trong vòng 1% của số công bố; seed 2023 cho 0,5746.
-- **SGD của repo (20 seed)** cho 0,687 ± 0,059, cùng phân phối với code gốc. Pipeline của repo vì vậy không có khác biệt nào đáng kể; số 0,605 là một lần chạy rơi vào phía thấp của phân phối.
+- **SGD của repo (20 seed)** cho 0,687 ± 0,059. Chênh với code gốc là +0,021, CI 95% Welch [−0,064; 0,106]: **không phát hiện khác biệt** giữa hai pipeline, dù với 5 seed của code gốc thì khoảng tin cậy còn rộng. Số 0,605 phù hợp với một lần chạy rơi vào phía thấp của phân phối.
 - **Linear H = 720:** code gốc 0,690 ± 0,042, repo 0,697 ± 0,048, công bố 0,698.
 - **Cách tính metric không đóng góp gì:** chấm lại checkpoint của code gốc bằng pipeline của repo (float64, W_eff) lệch số code gốc in ra tối đa 1,5e-7. Mọi khác biệt đến từ quá trình huấn luyện (seed).
 - **Hệ quả cho bảng 2 của bài:** chênh lệch DLinear 0,605 so với Linear 0,698 ở ETTh2 H = 720 nằm trong nhiễu theo seed. Code gốc cho DLinear 0,666 ± 0,070 và Linear 0,690 ± 0,042.
@@ -60,7 +61,7 @@ Ký hiệu: "dạng đóng" là nghiệm MSE ở λ* (chọn theo val MSE trên 
 
 Seed 2021–2040 cho Linear và DLinear, 2021–2030 cho NLinear. Siêu tham số và cách chấm như nhiệm vụ 3. Ba seed 2021–2023 chạy lại: **36/36 file W trùng từng bit** với nhiệm vụ 3 (3 mô hình × 4 H × 3 seed).
 
-Seed "hỏng" là seed dừng ở epoch 1, hoặc có MSE test lớn hơn trung vị + 3·MAD (MAD = trung vị của |x − trung vị|, không nhân 1,4826). Hàng "(bỏ hỏng)" chỉ in khi có seed hỏng. Kết luận chính dùng hàng giữ.
+Seed "hỏng" là seed dừng ở epoch 1, hoặc có MSE test lớn hơn trung vị + 3·MAD (MAD = trung vị của |x − trung vị|, không nhân 1,4826). Hàng "(bỏ hỏng)" chỉ in khi có seed hỏng. Kết luận chính dùng hàng giữ. Vì tiêu chí "hỏng" dựa trên MSE test, các hàng "(bỏ hỏng)" có dùng thông tin test và chỉ để tham khảo.
 
 | Mô hình | H | n | MSE test: TB ± sd (trung vị) | MSE val: TB ± sd (trung vị) | λ* test / val | Δ test [CI 95%] | Δ val [CI 95%] | seed tốt hơn λ* | seed hỏng | CI dưới 0 | tiêu chí cũ (2 sd) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -258,12 +259,12 @@ Dữ liệu chép vào `scratch/ltsf_official/dataset/`. Code gốc chạy trên
 | Linear | 720 | 2024 | 0,6992 / 0,5887 | 0,6992 / 0,5887 | +3,4e-08 | 6/9 |
 | Linear | 720 | 2025 | 0,7241 / 0,6008 | 0,7241 / 0,6008 | +2,3e-08 | 7/10 |
 
-| Mô hình | H | code gốc: TB ± sd (n) | SGD repo 20 seed: TB ± sd | công bố |
-|---|---|---|---|---|
-| DLinear | 336 | 0,4649 ± 0,0219 (5) | 0,4529 ± 0,0242 | 0,4480 |
-| Linear | 336 | 0,4832 ± 0,0489 (5) | 0,4496 ± 0,0241 | 0,4520 |
-| DLinear | 720 | 0,6655 ± 0,0699 (5) | 0,6869 ± 0,0592 | 0,6050 |
-| Linear | 720 | 0,6902 ± 0,0418 (5) | 0,6967 ± 0,0484 | 0,6980 |
+| Mô hình | H | code gốc: TB ± sd (n) | SGD repo 20 seed: TB ± sd | repo − code gốc [CI 95% Welch] | công bố |
+|---|---|---|---|---|---|
+| DLinear | 336 | 0,4649 ± 0,0219 (5) | 0,4529 ± 0,0242 | −0,0120 [−0,0387; 0,0147] | 0,4480 |
+| Linear | 336 | 0,4832 ± 0,0489 (5) | 0,4496 ± 0,0241 | −0,0336 [−0,0935; 0,0264] | 0,4520 |
+| DLinear | 720 | 0,6655 ± 0,0699 (5) | 0,6869 ± 0,0592 | 0,0214 [−0,0635; 0,1062] | 0,6050 |
+| Linear | 720 | 0,6902 ± 0,0418 (5) | 0,6967 ± 0,0484 | 0,0065 [−0,0447; 0,0576] | 0,6980 |
 
 - **Chấm chéo (D.3):** số code gốc in ra và số chấm lại bằng pipeline của repo lệch tối đa 1,5e-7 (float32 so với float64). Hai pipeline dùng cùng 2161 cửa sổ test.
 - **Theo D.4:** code gốc cho mức như repo, không phải 0,605. Nhưng "mức như repo" ở đây là một phân phối rộng (0,575–0,733), và 0,605 nằm trong đó. Với commit `0c11366`, số công bố không tái lập được từ seed mặc định, nhưng tái lập được về mặt phân phối.
@@ -271,7 +272,7 @@ Dữ liệu chép vào `scratch/ltsf_official/dataset/`. Code gốc chạy trên
 
 ## 6. Đoạn nháp cho báo cáo cuối: "ETTh2 và các đoạn cảm biến bị kẹt"
 
-> ETTh2 chứa các đoạn mà ba kênh tải (MUFL, LUFL, LULL) giữ nguyên một giá trị trong thời gian dài, có đoạn hơn hai tuần, nhiều khả năng do cảm biến bị kẹt. Sau khi chia cửa sổ, 2,5–6,3% số cửa sổ train có đầu vào hoặc đích hằng; val và test hầu như không có, trừ ở H ≤ 192. Mọi kết quả chính của báo cáo dùng dữ liệu gốc. Phần này là phân tích độ nhạy: bỏ các cửa sổ hằng khỏi train, giữ nguyên val và test. Ở H = 720, việc này làm MSE test của Linear và DLinear giảm 0,08–0,095, với cả nghiệm dạng đóng (0,740 → 0,646) lẫn SGD (Linear 0,697 → 0,602, trung bình 20 seed). Ở H = 96 thì ngược lại, MSE test tăng 0,01–0,02. Vì cả hai cách huấn luyện đều hưởng lợi ngang nhau, đoạn hằng không giải thích được việc SGD tốt hơn nghiệm dạng đóng trên ETTh2. Khoảng cách này vẫn còn trên train đã lọc ở 3/4 ô có H ≥ 336. Đoạn hằng giải thích được khoảng một nửa lợi thế của hàm mục tiêu MAE với Linear ở H ≥ 336 (47–60% lợi thế còn lại sau khi lọc). Chúng cũng gắn với các hệ phương trình xấu điều kiện trong IRLS: trên train đã lọc, IRLS ở λ = 0 không cần lập lại bước nào bằng float64. NLinear gần như không bị ảnh hưởng, một phần vì phép trừ giá trị cuối triệt tiêu các đầu vào hằng.
+> ETTh2 chứa các đoạn mà ba kênh tải (MUFL, LUFL, LULL) giữ nguyên một giá trị trong thời gian dài, có đoạn ít nhất hai tuần, nhiều khả năng do cảm biến bị kẹt. Sau khi chia cửa sổ, 2,5–6,3% số cửa sổ train có đầu vào hoặc đích hằng; val và test hầu như không có, trừ ở H ≤ 192. Mọi kết quả chính của báo cáo dùng dữ liệu gốc. Phần này là phân tích độ nhạy: bỏ các cửa sổ hằng khỏi train, giữ nguyên val và test. Ở H = 720, việc này làm MSE test của Linear và DLinear giảm 0,08–0,095, với cả nghiệm dạng đóng (0,740 → 0,646) lẫn SGD (Linear 0,697 → 0,602, trung bình 20 seed). Ở H = 96 thì ngược lại, MSE test tăng 0,01–0,02. Ở 3/4 ô có H ≥ 336, SGD cũng cải thiện khi lọc và vẫn tốt hơn nghiệm dạng đóng, nên đoạn hằng không giải thích được phần lớn việc SGD tốt hơn nghiệm dạng đóng trên ETTh2. Đoạn hằng giải thích được khoảng một nửa lợi thế của hàm mục tiêu MAE với Linear ở H ≥ 336 (47–60% lợi thế còn lại sau khi lọc). NLinear gần như không bị ảnh hưởng bởi việc lọc (MSE test đổi không quá 0,003).
 
 ## 7. Tái lập
 
