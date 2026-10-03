@@ -1,0 +1,34 @@
+diff --git a/run_longExp.py b/run_longExp.py
+index d672f96..fe3a360 100644
+--- a/run_longExp.py
++++ b/run_longExp.py
+@@ -78,9 +78,16 @@ parser.add_argument('--gpu', type=int, default=0, help='gpu')
+ parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
+ parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
+ parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
++parser.add_argument('--seed', type=int, default=2021, help='random seed (patch: replaces hard-coded fix_seed)')
+ 
+ args = parser.parse_args()
+ 
++# patch: seed from the command line; default 2021 gives the original behaviour (nothing above uses the RNG)
++fix_seed = args.seed
++random.seed(fix_seed)
++torch.manual_seed(fix_seed)
++np.random.seed(fix_seed)
++
+ args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
+ 
+ if args.use_gpu and args.use_multi_gpu:
+diff --git a/utils/tools.py b/utils/tools.py
+index 9f48a6c..8697d93 100644
+--- a/utils/tools.py
++++ b/utils/tools.py
+@@ -37,7 +37,7 @@ class EarlyStopping:
+         self.counter = 0
+         self.best_score = None
+         self.early_stop = False
+-        self.val_loss_min = np.Inf
++        self.val_loss_min = np.inf
+         self.delta = delta
+ 
+     def __call__(self, val_loss, model, path):

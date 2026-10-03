@@ -3,3 +3,4 @@ __pycache__/
 results/weights/
 results/sgd_etth2/*.npy
 results/recheck/weights/
+scratch/
