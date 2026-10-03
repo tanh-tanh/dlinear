@@ -113,7 +113,7 @@ def main():
                        "cf_test": cf_t, "cf_val": cf_v, "lam_star": float(s["lam"]),
                        "d_test": mt, "d_test_ci": ht, "d_val": mv, "d_val_ci": hv,
                        "frac_better": float((t < cf_t).mean()), "broken": bad,
-                       "ci_below_0": mt + ht < 0, "old_2sd": mt < 0 and -mt > 2 * t.std(ddof=1),
+                       "ci_below_0": bool(mt + ht < 0), "old_2sd": bool(mt < 0 and -mt > 2 * t.std(ddof=1)),
                        "vs_pub": (t.mean() - PUB[(model, H)]) / PUB[(model, H)]}
                 (a_rows if tag == "giữ" else a_drop).append(row)
                 if tag == "giữ" or bad:
@@ -149,7 +149,7 @@ def main():
         best = min(rows, key=lambda r: float(r["val_mse"]))
         checks.append({"model": model, "H": H, "n_lams": len(rows), "lam_star_path": float(best["lam"]),
                        "lam_star_summary": c["after"]["lam_star"],
-                       "ok": len(rows) == 142 and float(best["lam"]) == c["after"]["lam_star"]})
+                       "ok": bool(len(rows) == 142 and float(best["lam"]) == c["after"]["lam_star"])})
     summ["B_cf_check"] = checks
     md.append("## B. SGD trên train đã lọc\n")
     md.append(f"Kiểm nghiệm dạng đóng đã lọc (C.3 của nhiệm vụ 3): {sum(c['ok'] for c in checks)}/{len(checks)} "
@@ -180,7 +180,7 @@ def main():
                        "d_sgd": m_s, "d_sgd_ci": h_s, "d_sgd_minus_d_cf": m_s - d_cf,
                        "gap_full": g_f, "gap_full_ci": hg_f, "gap_filt": g_l, "gap_filt_ci": hg_l}
                 if metric == "test":
-                    row["mechanism"] = (d_cf < 0 and (m_s - d_cf) - h_s > 0 and g_l + hg_l >= 0)
+                    row["mechanism"] = bool(d_cf < 0 and (m_s - d_cf) - h_s > 0 and g_l + hg_l >= 0)
                 b_rows.append(row)
                 md.append(f"| {model} | {H} | {f4(cf_full)} → {f4(cf_filt)} ({f4(d_cf)}) | {f4(xf.mean())} → "
                           f"{f4(xl.mean())} | {fci(m_s, h_s)} | {fci(m_s - d_cf, h_s)} | {fci(g_f, hg_f)} | {fci(g_l, hg_l)} |")

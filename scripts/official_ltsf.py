@@ -46,7 +46,11 @@ def prepare():
     if OFF.exists():
         shutil.rmtree(OFF)
     shutil.copytree(SRC, OFF, ignore=shutil.ignore_patterns(".git"))
-    subprocess.run(["git", "apply", str(PATCH)], cwd=OFF, check=True)
+    # chạy từ gốc repo với --directory: chạy trong scratch/ (thư mục con của repo này) thì git apply hiểu đường dẫn
+    # theo gốc repo và lặng lẽ bỏ qua patch
+    subprocess.run(["git", "apply", f"--directory={OFF.relative_to(ROOT).as_posix()}", str(PATCH)], cwd=ROOT, check=True)
+    assert "args.seed" in (OFF / "run_longExp.py").read_text(encoding="utf-8"), "patch chưa được áp"
+    assert "np.Inf" not in (OFF / "utils" / "tools.py").read_text(encoding="utf-8"), "patch chưa được áp"
     (OFF / "dataset").mkdir()
     shutil.copyfile(ROOT / "data" / "ETTh2.csv", OFF / "dataset" / "ETTh2.csv")
     print(f"→ {OFF.relative_to(ROOT)} (đã áp {PATCH.relative_to(ROOT)})")
