@@ -273,17 +273,22 @@ def main():
         md.append(f"| {r['model']} | {r['H']} | {r['seed']} | {r['official_test_mse']:.4f} / {r['official_test_mae']:.4f} | "
                   f"{r['repo_test_mse']:.4f} / {r['repo_test_mae']:.4f} | {r['repo_test_mse'] - r['official_test_mse']:+.1e} | "
                   f"{r['best_epoch']}/{r['n_epochs_run']} |".replace(".", ","))
-    md.append("\n| Mô hình | H | code gốc: TB ± sd (n) | SGD repo 20 seed: TB ± sd | công bố |\n|---|---|---|---|---|")
+    md.append("\n| Mô hình | H | code gốc: TB ± sd (n) | SGD repo 20 seed: TB ± sd | repo − code gốc [CI 95% Welch] "
+              "| công bố |\n|---|---|---|---|---|---|")
     d_sum = []
     for (model, H) in sorted({(r["model"], r["H"]) for r in d_rows}, key=lambda t: (t[1], t[0])):
         o = np.array([r["official_test_mse"] for r in d_rows if (r["model"], r["H"]) == (model, H)])
         rs = load_runs(A_DIR, model, H)
         a = np.array([r["test_mse"] for r in rs])
+        va, vo = a.var(ddof=1) / len(a), o.var(ddof=1) / len(o)
+        df = (va + vo) ** 2 / (va ** 2 / (len(a) - 1) + vo ** 2 / (len(o) - 1))
+        hw = float(stats.t.ppf(0.975, df) * np.sqrt(va + vo))
         d_sum.append({"model": model, "H": H, "official_mean": float(o.mean()),
                       "official_sd": float(o.std(ddof=1)) if len(o) > 1 else None, "n": len(o),
-                      "repo_mean": float(a.mean()) if len(a) else None, "pub": PUB[(model, H)]})
+                      "repo_mean": float(a.mean()) if len(a) else None, "pub": PUB[(model, H)],
+                      "repo_minus_official": float(a.mean() - o.mean()), "welch_halfwidth": hw, "welch_df": float(df)})
         md.append(f"| {model} | {H} | {f4(o.mean())} ± {f4(o.std(ddof=1)) if len(o) > 1 else '—'} ({len(o)}) | "
-                  f"{f4(a.mean())} ± {f4(a.std(ddof=1))} | {f4(PUB[(model, H)])} |")
+                  f"{f4(a.mean())} ± {f4(a.std(ddof=1))} | {fci(a.mean() - o.mean(), hw)} | {f4(PUB[(model, H)])} |")
     summ["D"] = {"runs": d_rows, "summary": d_sum}
 
     (OUT / "tables.md").write_text("\n".join(md), encoding="utf-8")
