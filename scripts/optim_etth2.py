@@ -234,8 +234,8 @@ def report(d, lam_info, sel, lr_adam):
                   "gd_zero_beats_star_val_by_more_than_0.005": gz["val_mse"] < star["val_mse"] - 0.005,
                   "rel_dist_path": [{"lam": a, "rel": b} for a, b in zip(lams, rel)]}
     md.append("## A.2. `gd_zero` so với đường ridge\n")
-    md.append(f"- λ_max của Hessian 2G/(nH): power iteration {lam_info['power']:.6g} ({lam_info['power_iters']} vòng), "
-              f"eigvalsh {lam_info['eigvalsh']:.6g}; lr của GD = 1/λ_max = {lam_info['lr']:.6g}.")
+    md.append(f"- λ_max của Hessian 2G/(nH): power iteration {num(lam_info['power'], 6)} ({lam_info['power_iters']} vòng), "
+              f"eigvalsh {num(lam_info['eigvalsh'], 6)}; lr của GD = 1/λ_max = {num(lam_info['lr'], 4)}.")
     md.append(f"- Ridge λ* = {star['lam']:.4g}: val {num(star['val_mse'])}, test {num(star['test_mse'])} "
               f"(tính lại bằng ridge_path: {num(chk['val'], 6)} / {num(chk['test'], 6)}).")
     md.append(f"- `gd_zero`, bước tốt nhất {gz['best_step']}: val {num(gz['val_mse'])}, test {num(gz['test_mse'])}; "
@@ -250,8 +250,8 @@ def report(d, lam_info, sel, lr_adam):
             "adam_full": [load(f"adam_full_seed{s}") for s in SEEDS], "Adam mini-batch": mb}
     md.append("## A.3. Bảng\n")
     md.append(f"Δ = cách − ridge λ*. CI 95% theo t với n − 1 bậc tự do. `gd_zero` tất định (n = 1): Δ là một số, "
-              f"nhãn theo dấu của Δ. lr của Adam toàn batch: {lr_adam:g} (seed 2021, val tốt nhất: "
-              + ", ".join(f"lr {k:g} → {num(v, 6)}" for k, v in sel.items()) + ").\n")
+              f"quy tắc ba trường hợp không áp được, chỉ ghi dấu. lr của Adam toàn batch: {str(lr_adam).replace('.', ',')} (seed 2021, val tốt nhất: "
+              + ", ".join(f"lr {str(k).replace('.', ',')} → {num(v, 6)}" for k, v in sel.items()) + ").\n")
     md.append("| Cách | n | MSE val (TB ± sd) | MSE test (TB ± sd) | Δ val so với λ* [CI] | Δ test so với λ* [CI] | "
               "bước tốt nhất (TB; min–max) | dừng ở bước cuối | nhãn |")
     md.append("|---|---|---|---|---|---|---|---|---|")
@@ -269,7 +269,9 @@ def report(d, lam_info, sel, lr_adam):
         mv, hv = ci(v - star["val_mse"])
         mt, ht = ci(t - star["test_mse"])
         sv, st = side(mv, hv), side(mt, ht)
-        lab = label(sv, st)
+        lab = label(sv, st) if len(rs) > 1 else "— (n = 1, không có CI)"
+        if len(rs) == 1:
+            sv = st = "dấu " + ("âm" if mv < 0 else "dương")
         sd = (lambda x: f" ± {num(x.std(ddof=1))}" if len(x) > 1 else "")
         cis = (lambda m, h: f"{num(m)} [{num(m - h)}; {num(m + h)}]" if len(rs) > 1 else num(m))
         md.append(f"| {'`' + name + '`' if name != 'Adam mini-batch' else name + ' (20 seed, đã có)'} | {len(rs)} | "
