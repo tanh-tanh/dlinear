@@ -5,6 +5,10 @@
     python scripts/sgd_etth2.py --step run --model DLinear --H 96 --seed 2021
     python scripts/sgd_etth2.py --step run --out sgd_etth2_20seed --seed $(seq 2021 2040)      # NHIEM_VU_4 A
     python scripts/sgd_etth2.py --step run --out sgd_etth2_filtered --filtered ...             # NHIEM_VU_4 B
+    python scripts/sgd_etth2.py --step run --dataset ETTh1 --out sgd_b1_b4/ETTh1 --seed ...    # NHIEM_VU_5 B
+
+--dataset (mặc định ETTh2): chọn dữ liệu và siêu tham số của script chính thức tương ứng (HPS). Với ETTh2 code
+chạy y như trước. --threads: torch.set_num_threads (mặc định không đặt); số luồng thực tế ghi vào JSON.
 
 --filtered: "train đã lọc" của NHIEM_VU_3 C.3 (constant_windows.constant_mask). Cặp (cửa sổ, kênh) hằng bị bỏ
 khỏi hàm mất mát (MaskedETTDataset); batch, thứ tự xáo, val, test giữ nguyên. Không có --filtered thì
@@ -45,7 +49,13 @@ L = 336
 HORIZONS = [96, 192, 336, 720]
 SEED0 = 2021                         # run_longExp.py dòng 8
 SEEDS = [SEED0, SEED0 + 1, SEED0 + 2]
-HP = {"lr": 0.05, "batch_size": 32, "epochs": 10, "patience": 3, "lradj": "type1"}   # etth2.sh
+# scripts/EXP-LongForecasting/Linear/{etth2,etth1,ettm1}.sh dòng 24/38/52/66 (lr, batch);
+# run_longExp.py dòng 66/68/72 (train_epochs 10, patience 3, lradj type1)
+HPS = {"ETTh2": {"lr": 0.05, "batch_size": 32, "epochs": 10, "patience": 3, "lradj": "type1"},
+       "ETTh1": {"lr": 0.005, "batch_size": 32, "epochs": 10, "patience": 3, "lradj": "type1"},
+       "ETTm1": {"lr": 0.0001, "batch_size": 8, "epochs": 10, "patience": 3, "lradj": "type1"}}
+DATASET = "ETTh2"
+HP = HPS[DATASET]
 OUT = ROOT / "results" / "sgd_etth2"
 DEVICE = "cpu"
 
@@ -107,7 +117,7 @@ def run_one(name, H, seed, cell, splits, filtered=False):
     ckpt.unlink()
     W, b = effective_weights(model)
     best = min(range(len(hist)), key=lambda i: hist[i][2])           # epoch có val nhỏ nhất (đã nạp lại)
-    res = {"device": DEVICE, "dataset": "ETTh2", "H": H, "model": name, "seed": seed, "L": L,
+    res = {"device": DEVICE, "dataset": DATASET, "num_threads": torch.get_num_threads(), "H": H, "model": name, "seed": seed, "L": L,
            "k": 25 if name == "DLinear" else None, **HP, "drop_last_train": True,
            "init": "nn.Linear mặc định", "best_epoch": hist[best][0], "n_epochs_run": len(hist),
            "history": [{"epoch": e, "train_loss": t, "val_mse_torch": v, "lr": lr} for e, t, v, lr in hist],
@@ -130,9 +140,9 @@ def run_one(name, H, seed, cell, splits, filtered=False):
 
 
 def step_run(models, horizons, seeds, force, filtered=False):
-    splits = load_ett(ROOT / "data" / "ETTh2.csv", L, "ETTh2")
+    splits = load_ett(ROOT / "data" / f"{DATASET}.csv", L, DATASET)
     for H in horizons:
-        cell = load_cell("ETTh2", H)
+        cell = load_cell(DATASET, H)
         for name in models:
             for seed in seeds:
                 if (OUT / f"{name}_H{H}_seed{seed}.json").exists() and not force:
@@ -150,9 +160,14 @@ def main():
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--out", default="sgd_etth2", help="thư mục con của results/")
     ap.add_argument("--filtered", action="store_true", help="train đã lọc cửa sổ hằng (NHIEM_VU_4 B)")
+    ap.add_argument("--dataset", default="ETTh2", choices=list(HPS))
+    ap.add_argument("--threads", type=int, default=None, help="torch.set_num_threads (mặc định không đặt)")
     args = ap.parse_args()
-    global OUT
+    global OUT, DATASET, HP
     OUT = ROOT / "results" / args.out
+    DATASET, HP = args.dataset, HPS[args.dataset]
+    if args.threads:
+        torch.set_num_threads(args.threads)
     OUT.mkdir(parents=True, exist_ok=True)
     if args.step == "a2":
         sys.exit(0 if step_a2() else 1)
