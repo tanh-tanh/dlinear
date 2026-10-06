@@ -210,7 +210,7 @@ def main():
                    "linear_better_test": bool(dt[0] - dt[1] > 0)}
             c3.append(row)
             md.append(f"| {ds} | {H} | {len(a)}, {len(b)} | {fci(dv[0], dv[1])} | {fci(dt[0], dt[1])} | "
-                      f"{num(cfv)} / {num(cft)} | {num(pub, 3)} | {'có' if sig_v else 'không'} / "
+                      f"{num(cfv, 5)} / {num(cft, 5)} | {num(pub, 3)} | {'có' if sig_v else 'không'} / "
                       f"{'có' if sig_t else 'không'} |")
     nv = sum(r["dlinear_better_val"] for r in c3)
     nt = sum(r["dlinear_better_test"] for r in c3)
