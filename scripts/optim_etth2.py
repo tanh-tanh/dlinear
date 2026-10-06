@@ -219,10 +219,10 @@ def report(d, lam_info, sel, lr_adam):
     X, Y = d["X"], d["Y"]
     W_at = ridge_path(X - X.mean(0), Y - Y.mean(0))
     lams = lambda_grid()
-    rel = [float(np.linalg.norm(Wg - W_at(lam).T) / np.linalg.norm(W_at(lam).T)) for lam in lams]
+    rel = [float(np.linalg.norm(Wg - W_at(lam)) / np.linalg.norm(W_at(lam))) for lam in lams]
     i = int(np.argmin(rel))
     # kiểm: ridge λ* của ridge_path cho lại val/test của results.csv
-    Ws = W_at(star["lam"]).T
+    Ws = W_at(star["lam"])
     bs = Y.mean(0) - Ws @ X.mean(0)
     Wst = np.concatenate([Ws, bs[:, None]], axis=1)
     chk = {"val": direct(Wst, d["Xt_va"], d["Y_va"])[0], "test": direct(Wst, d["Xt_te"], d["Y_te"])[0]}
