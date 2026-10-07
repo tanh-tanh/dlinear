@@ -16,10 +16,10 @@ Ký hiệu: "dạng đóng" là nghiệm MSE ở λ* (chọn theo val MSE trên 
 
 ## 1. Kết luận
 
-**A. Trên Linear ETTh2 H = 720, GD toàn batch cho đúng nghiệm ridge; Adam toàn batch chỉ thắng trên test. Kết quả không khớp mẫu nào trong bảng A.3, nên không rút ra cơ chế.**
+**A. Trên Linear ETTh2 H = 720, GD toàn batch cho MSE val và test trùng ridge λ* tới 3e-4; Adam toàn batch chỉ thắng trên test. Kết quả không khớp mẫu nào trong bảng A.3, nên không rút ra cơ chế.**
 
-- **`gd_zero` (GD toàn batch từ 0, lr = 1/λ_max) đi qua đường ridge, đúng như lý thuyết:** val 0,6670, test 0,7401, so với λ* 0,6673 / 0,7404 (Δ −0,0002 / −0,0003). Ở bước tốt nhất, W gần W_ridge(λ = 1995) nhất (sai số tương đối 0,095). Không vượt ngưỡng 0,005 của A.2.
-- **`gd_init` (GD toàn batch, khởi tạo như LTSF-Linear) cũng ≈ ridge:** Δ val = Δ test = +0,0003. CI rất hẹp (sd giữa 10 seed gần 0), nên nhãn hình thức là "dạng đóng tốt hơn thật", nhưng độ lớn không đáng kể. Khởi tạo ngẫu nhiên không tạo ra khoảng cách.
+- **`gd_zero` (GD toàn batch từ 0, lr = 1/λ_max):** val 0,6670, test 0,7401, so với λ* 0,6673 / 0,7404 (Δ −0,0002 / −0,0003). Không vượt ngưỡng 0,005 của A.2. Về trọng số, W ở bước tốt nhất cách W_ridge(λ) gần nhất (λ = 1995) 9,5% và cách W_ridge(λ*) 16% (chuẩn tương đối), nên chỉ MSE là trùng, W thì không trùng hẳn.
+- **`gd_init` (GD toàn batch, khởi tạo như LTSF-Linear) cũng ≈ ridge:** Δ val = Δ test = +0,0003. CI rất hẹp (sd giữa 10 seed gần 0), nên nhãn hình thức là "dạng đóng tốt hơn thật", với độ lớn 0,0003. Cả 10 lần chạy đến giới hạn 20 000 bước (bước tốt nhất 18 020–18 640, không phải bước cuối); val sau 20 000 bước chưa được kiểm.
 - **`adam_full` (Adam toàn batch, lr 0,05 chọn theo val):** Δ val −0,0011 [−0,0024; 0,0002] (hòa), Δ test −0,0551 [−0,0889; −0,0212] (thắng). Nhãn: "khác biệt do val khác test".
 - **Adam mini-batch (20 seed, đã có):** Δ val −0,0082, Δ test −0,0437, cả hai thắng: "SGD tốt hơn thật".
 - **Đối chiếu bảng A.3:** hai dòng GD ≈ ridge, nhưng `adam_full` không "thắng như Adam mini-batch" (val hòa) và cũng không "≈ ridge" (test thắng rõ). Không khớp mẫu nào, nên chỉ báo cáo số liệu. Theo NHIEM_VU_5, dừng điều tra cơ chế ETTh2 tại đây.
@@ -27,8 +27,8 @@ Ký hiệu: "dạng đóng" là nghiệm MSE ở λ* (chọn theo val MSE trên 
 **B1. Số công bố nằm trong [min, max] của 20 seed ở 28/36 ô. Cả 8 ô nằm ngoài đều có số công bố thấp hơn mọi seed; 5 trong số đó là DLinear.**
 
 - Ô nằm ngoài: DLinear ETTh1 H = 192, 720; DLinear ETTm1 H = 96, 192, 336; NLinear ETTh2 H = 336, 720; NLinear ETTm1 H = 336. **Không ô Linear nào** nằm ngoài.
-- Với DLinear, số công bố nằm ở phân vị 0–10 ở 7/12 ô (5/12 ô ở phân vị 0). Số công bố của DLinear thường là một lần chạy may mắn so với phân phối theo seed của repo.
-- **Linear, ETTh1, H = 720:** SGD của repo cho **0,5063 ± 0,0363** (trung vị 0,4927, [0,4727; 0,6250], 20 seed). Số công bố 0,624 nằm ở phân vị 95: chỉ một seed (0,6250) cao hơn. Dạng đóng λ* cho 0,4701 (0,4699 trong NHIEM_VU_3 là ở λ = 1,585e4 của tiêu chí chọn khác; xem `BAO_CAO_ETTH2_SGD.md`). Như vậy 0,624 có xảy ra với code này nhưng thuộc đuôi trên; trung bình SGD vẫn kém dạng đóng 0,036.
+- Với DLinear, số công bố nằm ở phân vị 0–10 ở 7/12 ô và thấp hơn mọi seed SGD của repo ở 5/12 ô. Pipeline của repo khác code gốc ở vài điểm (cách tính val, thứ tự lấy số ngẫu nhiên; xem docstring của `sgd_etth2.py`), và tính tương đương mới chỉ kiểm ở ETTh2 H = 720 (nhiệm vụ 4, D), nên không quy được khoảng chênh này cho may rủi theo seed.
+- **Linear, ETTh1, H = 720:** SGD của repo cho **0,5063 ± 0,0363** (trung vị 0,4927, [0,4727; 0,6250], 20 seed). Số công bố 0,624 nằm ở phân vị 95: chỉ một seed (0,6250) cao hơn. Dạng đóng λ* cho 0,4701 (λ* = 1,778e4 trên lưới 141 λ; số 0,4699 trong NHIEM_VU_3 là λ* = 1,585e4 trên lưới cũ, xem mục C.2 của `BAO_CAO_ETTH2_SGD.md`). Như vậy 0,624 có xảy ra với code này nhưng thuộc đuôi trên; trung bình SGD vẫn kém dạng đóng 0,036.
 
 **B4. Trên 36 ô: SGD tốt hơn thật 6, dạng đóng tốt hơn thật 10, SGD có dấu hiệu khớp val quá mức 12, khác biệt do val khác test 7, không phân biệt được 1. Không ô nào ngoài ETTh2 có "SGD tốt hơn thật".**
 
@@ -39,7 +39,7 @@ Ký hiệu: "dạng đóng" là nghiệm MSE ở λ* (chọn theo val MSE trên 
 
 **C.3. DLinear tốt hơn Linear có ý nghĩa khi huấn luyện bằng SGD ở 4/12 ô, cả 4 đều là ETTm1; trên ETTh1, ETTh2 không ô nào.**
 
-- ETTm1: Δ (DLinear − Linear) test −0,0032 đến −0,0047, CI Welch nằm hẳn dưới 0 ở cả val lẫn test. Với dạng đóng, chênh lệch tương ứng chỉ −0,00003 đến −0,00004. Lợi thế của DLinear ở đây là lợi thế khi tối ưu bằng SGD, không phải lợi thế của lớp mô hình.
+- ETTm1: Δ (DLinear − Linear) test −0,0032 đến −0,0047, CI Welch nằm hẳn dưới 0 ở cả val lẫn test. Với dạng đóng, chênh lệch tương ứng chỉ −0,00003 đến −0,00004 (dưới 1e-4). Khoảng chênh chỉ xuất hiện khi huấn luyện bằng SGD.
 - ETTh1, ETTh2: mọi CI chứa 0. Chênh lệch lớn trong bài ở ETTh1 H = 720 (−0,152) và ETTh2 H = 720 (−0,093) không xuất hiện khi lấy trung bình 20 seed (+0,003 [−0,021; 0,028] và −0,010 [−0,044; 0,025]).
 - Không ô nào Linear tốt hơn DLinear có ý nghĩa.
 
@@ -65,8 +65,8 @@ Chung: L = 336, individual = False, k = 25 (DLinear), khởi tạo mặc định
 
 ### 2.3. Thời gian và số seed
 
-- **Đo trước (B.2.1):** DLinear seed 2021, mỗi (dataset, H) một lần: ETTh1 4–8 s, ETTm1 42–61 s. Ước lượng ETTm1 240 lần × khoảng 60 s ≈ 4 giờ CPU, chạy song song 3 tiến trình nên dưới ngân sách 10 giờ. **Không giảm seed.**
-- **Chạy thật:** ETTh1 11:37–11:50 (13 phút), ETTm1 11:50–13:12 (82 phút), 3 tiến trình song song (mỗi mô hình một tiến trình, 6 luồng). Khi tiến trình DLinear ETTm1 chậm hơn hai tiến trình kia, mở thêm hai tiến trình cho DLinear ETTm1 H = 336 (seed giảm dần từ 2040) và H = 720; script bỏ qua file đã có nên không lần chạy nào bị lặp. Tổng thời gian thực của Phần B: **khoảng 1 giờ 35 phút**.
+- **Đo trước (B.2.1):** DLinear seed 2021, mỗi (dataset, H) một lần: ETTh1 4–8 s, ETTm1 42–61 s (`scratch/nv5/timing.log`). Suy từ các số đo này: ETTm1 cần cỡ 240 lần × 60 s ≈ 4 giờ CPU, chạy song song 3 tiến trình thì dưới ngân sách 10 giờ. Thực tế ETTm1 tốn 4,69 giờ CPU (bảng dưới). **Không giảm seed.**
+- **Chạy thật:** ETTh1 11:37–11:50 (13 phút), ETTm1 11:50–13:12 (82 phút), 3 tiến trình song song (mỗi mô hình một tiến trình, 6 luồng). Khi tiến trình DLinear ETTm1 chậm hơn hai tiến trình kia, mở thêm hai tiến trình cho DLinear ETTm1 H = 336 (seed giảm dần từ 2040) và H = 720; script bỏ qua file đã có; log của các tiến trình DLinear ETTm1 không có file nào được ghi hai lần. Tổng thời gian thực của Phần B: **khoảng 1 giờ 35 phút**.
 - **Phần A:** 24 lần chạy, tổng 342 s, lâu nhất 28 s (float64, CPU).
 
 | Dataset | Mô hình | n seed mỗi H | giây/lần: TB (min–max) | epoch chạy: TB | epoch tốt nhất: TB | tổng giờ CPU |
@@ -92,7 +92,7 @@ Số seed thực tế: ETTh1 20 seed (2021–2040) mọi ô; ETTm1 20 seed (2021
 
 ## 3. Phần A: trình tối ưu trên Linear, ETTh2, H = 720
 
-Cấu hình như A.1. Tính bằng float64 trên CPU qua ma trận Gram của `[X, 1]`; gradient và MSE đúng của toàn batch (công thức ở docstring của `scripts/optim_etth2.py`). Đánh giá val mỗi 20 bước (GD, tối đa 20 000) hoặc mỗi 5 bước (Adam, tối đa 5 000); dừng khi val không cải thiện trong 25% số bước tối đa. Không lần nào dừng ở bước cuối.
+Cấu hình như A.1. Tính bằng float64 trên CPU qua ma trận Gram của `[X, 1]`; gradient và MSE đúng của toàn batch (công thức ở docstring của `scripts/optim_etth2.py`). Đánh giá val mỗi 20 bước (GD, tối đa 20 000) hoặc mỗi 5 bước (Adam, tối đa 5 000); dừng khi val không cải thiện trong 25% số bước tối đa. Cột "dừng ở bước cuối" đếm số lần bước tốt nhất là bước cuối cùng: 0 ở mọi cách. Nhưng `gd_init` chạy đủ 20 000 bước ở cả 10 seed (không dừng theo patience), `gd_zero` dừng theo patience ở bước 7 920, `adam_full` dừng theo patience ở bước 1 330–2 165.
 
 ### A.2. `gd_zero` so với đường ridge
 
@@ -115,7 +115,7 @@ Cấu hình như A.1. Tính bằng float64 trên CPU qua ma trận Gram của `[
 
 Bước tốt nhất của Adam mini-batch = epoch tốt nhất × số batch mỗi epoch (bước ở cuối epoch đó).
 
-**Ghi chú:** `gd_init` cần trung bình 18 276 bước, gần mức tối đa 20 000, và không lần nào bị cắt ở bước cuối. Adam toàn batch đạt val tốt nhất rất sớm (80–915 bước). Ba giá trị lr của Adam cho val gần nhau (0,66692 / 0,66705 / 0,66736).
+**Ghi chú:** bước tốt nhất của `gd_init` trung bình 18 276, gần mức tối đa 20 000; mọi lần chạy kết thúc ở giới hạn bước. Adam toàn batch đạt val tốt nhất rất sớm (80–915 bước). Ba giá trị lr của Adam cho val gần nhau (0,66692 / 0,66705 / 0,66736).
 
 ## 4. B1: SGD so với số công bố
 
@@ -258,7 +258,7 @@ Mỗi ô là một (dataset, H). Trong mỗi ô: điểm là MSE test của từ
 
 ## 8. Đoạn nháp cho RQ3 (khoảng 200 từ)
 
-> Chúng tôi huấn luyện Linear, DLinear và NLinear bằng SGD (Adam mini-batch, dừng sớm theo val, siêu tham số của script chính thức) với 20 seed trên ETTh1, ETTm1, ETTh2 (NLinear ETTh2: 10 seed), rồi so với nghiệm dạng đóng tại λ* chọn theo val. Ở 28/36 ô, số công bố nằm trong khoảng giữa seed tốt nhất và kém nhất; ở 8 ô còn lại (5 là DLinear), số công bố thấp hơn mọi seed. Với Linear ở ETTh1 H = 720, số công bố 0,624 thuộc đuôi trên của phân phối (trung bình 0,506 ± 0,036), trong khi nghiệm dạng đóng đạt 0,470. Trên ETTh1 và ETTm1, SGD kém nghiệm dạng đóng trên test ở cả 24/24 ô; trên ETTh1, SGD thường đạt val thấp hơn nhưng test cao hơn. Chỉ trên ETTh2, với Linear và DLinear, SGD tốt hơn nghiệm dạng đóng trên cả val và test (6/8 ô). Trên Linear ETTh2 H = 720, gradient descent toàn batch cho đúng nghiệm ridge, còn Adam toàn batch chỉ tốt hơn trên test; chúng tôi không xác định được cơ chế. Khi huấn luyện bằng SGD, DLinear tốt hơn Linear có ý nghĩa thống kê ở 4/12 cặp (dataset, H), đều trên ETTm1, với chênh lệch 0,003–0,005; với nghiệm dạng đóng, chênh lệch tương ứng dưới 0,0001.
+> Chúng tôi huấn luyện Linear, DLinear và NLinear bằng SGD (Adam mini-batch, dừng sớm theo val, siêu tham số của script chính thức) với 20 seed trên ETTh1, ETTm1, ETTh2 (NLinear ETTh2: 10 seed), rồi so với nghiệm dạng đóng tại λ* chọn theo val. Ở 28/36 ô, số công bố nằm trong khoảng giữa seed tốt nhất và kém nhất; ở 8 ô còn lại (5 là DLinear), số công bố thấp hơn mọi seed. Với Linear ở ETTh1 H = 720, số công bố 0,624 thuộc đuôi trên của phân phối (trung bình 0,506 ± 0,036), trong khi nghiệm dạng đóng đạt 0,470. Trên ETTh1 và ETTm1, SGD kém nghiệm dạng đóng trên test ở cả 24/24 ô; trên ETTh1, SGD thường đạt val thấp hơn nhưng test cao hơn. Chỉ trên ETTh2, với Linear và DLinear, SGD tốt hơn nghiệm dạng đóng trên cả val và test (6/8 ô). Trên Linear ETTh2 H = 720, gradient descent toàn batch cho MSE val và test trùng nghiệm ridge tới 3e-4, còn Adam toàn batch chỉ tốt hơn trên test; chúng tôi không xác định được cơ chế. Khi huấn luyện bằng SGD, DLinear tốt hơn Linear có ý nghĩa thống kê ở 4/12 cặp (dataset, H), đều trên ETTm1, với chênh lệch 0,003–0,005; với nghiệm dạng đóng, chênh lệch tương ứng dưới 0,0001.
 
 ## 9. Tái lập
 
