@@ -394,5 +394,6 @@ Báo cáo: [BAO_CAO_SGD_B1_B4.md](BAO_CAO_SGD_B1_B4.md). Không đổi `src/`, k
 
 ## 10.3. Ghi chú môi trường
 
-- Report và mọi lần chạy dùng `.venv-gpu` (torch 2.14.0+cu130). Python hệ thống hiện có torch 2.6.0+cpu và không có pytest; `bench_5060ti.hw_info` cần CUDA nên script sẽ dừng nếu chạy bằng Python đó.
+- Mọi lần chạy và report dùng `.venv-gpu` (torch 2.14.0+cu130, như `BAO_CAO_5060TI.md`). Python hệ thống và `.venv` có torch 2.6.0+cpu (cài từ 29/09, không đổi); chạy script bằng chúng sẽ dừng ở `bench_5060ti.hw_info` vì cần CUDA.
+- Test (`.venv-gpu/Scripts/python -m unittest discover -s tests -t .`): **49, tất cả đạt** (07/10/2026).
 - 107 JSON ETTm1 viết từ 12:33 đến 13:12 ngày 06/10 có `git_commit` rỗng, nguyên nhân chưa xác định; HEAD lúc đó là `a4fde50` (xem mục 2.3 của báo cáo).
