@@ -14,8 +14,8 @@
   "tf32_cudnn": false,
   "float32_matmul_precision": "highest"
  },
- "git_commit": "89a1baaa8d3a",
- "date": "2026-10-07 09:41:15",
+ "git_commit": "f4fed5d93e8d",
+ "date": "2026-10-07 09:53:22",
  "n_seeds": {
   "ETTh1 H=96 Linear": 20,
   "ETTh1 H=96 DLinear": 20,
