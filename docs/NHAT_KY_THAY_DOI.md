@@ -371,3 +371,28 @@ Phạm vi: `docs/NHIEM_VU_4.md`. Kết quả ở [BAO_CAO_ETTH2_2.md](BAO_CAO_ET
   - **Lỗi đã sửa (commit `926efb2`):** `git apply` chạy với cwd là `scratch/ltsf_official` (thư mục con của repo này) hiểu đường dẫn theo gốc repo và **lặng lẽ bỏ qua** patch. Giờ áp từ gốc repo với `--directory=scratch/ltsf_official` và kiểm hai dấu hiệu của patch.
 - **`scripts/report_etth2_2.py`:** lập mọi bảng của báo cáo; kiểm tất định của seed 2021–2023.
 - **`.gitignore`:** thêm `scratch/`.
+
+---
+
+# Nhật ký thay đổi code: nhiệm vụ 5, trình tối ưu trên ETTh2 và SGD 20 seed cho B1, B4 (06–07/10/2026)
+
+Báo cáo: [BAO_CAO_SGD_B1_B4.md](BAO_CAO_SGD_B1_B4.md). Không đổi `src/`, không đổi test, không đổi toán của `irls`.
+
+## 10.1. `scripts/sgd_etth2.py` (commit `33e6101`)
+
+- **`--dataset {ETTh2, ETTh1, ETTm1}`** (mặc định ETTh2): chọn file dữ liệu, ô dạng đóng (`load_cell`) và siêu tham số trong bảng `HPS`, đọc từ `scripts/EXP-LongForecasting/Linear/{etth1,etth2,ettm1}.sh` dòng 24/38/52/66 và `run_longExp.py` dòng 66/68/72 của LTSF-Linear. JSON ghi `dataset` thật thay vì cố định "ETTh2".
+- **`--threads`:** `torch.set_num_threads` (mặc định không đặt). JSON ghi thêm `num_threads`.
+- **Kiểm:** với ETTh2, seed 2021–2023 × 3 mô hình × H ∈ {96, 720} chạy lại cho **18/18 file W trùng từng byte** với `results/sgd_etth2_20seed/`.
+
+## 10.2. Script mới
+
+- **`scripts/optim_etth2.py`** (Phần A; commit `3c915fc`, sửa ở `8f5b9a3`, `fe1f5aa`): GD toàn batch (`gd_zero`, `gd_init`, lr = 1/λ_max) và Adam toàn batch (`adam_full`) trên Linear ETTh2 H = 720, float64 trên CPU qua ma trận Gram. λ_max bằng power iteration, kiểm chéo bằng `eigvalsh`.
+  - **Lỗi đã sửa (`8f5b9a3`):** `ridge_path` đã trả W dạng [H, L], code cũ chuyển vị thêm lần nữa nên phép so ‖W_gd − W_ridge(λ)‖ lỗi kích thước. Lỗi làm script dừng, không tạo ra số sai.
+  - **`fe1f5aa`:** `gd_zero` (n = 1) không có CI nên không gán nhãn ba trường hợp, chỉ ghi dấu.
+- **`scripts/report_sgd_b1_b4.py`** (commit `27e393c`, `a4fde50`): bảng B1, B4 (kèm đếm nhãn), C.3 và hình `H3_sgd_vs_optimum.png`. Số công bố lấy từ mục 0.1 của `NHIEM_VU_3.md`; nhãn ba trường hợp dùng chung hàm `label` của `optim_etth2.py`.
+- **`.gitignore`:** thêm `results/optim_etth2/*.npy`, `results/sgd_b1_b4/**/*.npy`.
+
+## 10.3. Ghi chú môi trường
+
+- Report và mọi lần chạy dùng `.venv-gpu` (torch 2.14.0+cu130). Python hệ thống hiện có torch 2.6.0+cpu và không có pytest; `bench_5060ti.hw_info` cần CUDA nên script sẽ dừng nếu chạy bằng Python đó.
+- 107 JSON ETTm1 viết từ 12:33 đến 13:12 ngày 06/10 có `git_commit` rỗng, nguyên nhân chưa xác định; HEAD lúc đó là `a4fde50` (xem mục 2.3 của báo cáo).
